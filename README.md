@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center">
+  <br>
+  <a href="https://openpecha.org"><img src="https://avatars.githubusercontent.com/u/82142807?s=400&u=19e108a15566f3a1449bafb03b8dd706a72aebcd&v=4" alt="OpenPecha" width="150"></a>
+  <br>
+</h1>
+
+<h3 align="center">Monlam Grand Dictionary Editor</h3>
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+- [Usage](#usage)
+- [Environment Variables](#environment-variables)
+- [Contributing](#contributing)
+
+## Prerequisites
+
+Before you begin, ensure you have the following prerequisites installed and configured:
+
+- **Node.js**: You must have Node.js installed on your system. You can download it from [nodejs.org](https://nodejs.org/).
+
+- **PostgreSQL**: Ensure that you have a PostgreSQL database up and running. You will need the database connection information to configure the application.
+
+- **Auth0 Account**: Sign up for an Auth0 account at [auth0.com](https://auth0.com/) and create an Auth0 application to obtain the necessary authentication credentials.
 
 ## Getting Started
 
-First, run the development server:
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone git@github.com:OpenPecha/monlam-dictionary-editor.git
+   ```
+
+2. Change into the project directory:
+
+   ```bash
+   cd monlamgrandeditor
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+### Configuration
+
+1. Create a `.env` file in the root of the project and add the following environment variables:
+
+   ```env
+   # PostgreSQL Database Configuration
+   DATABASE_URL=your-db-connection-string
+
+   # Auth0 Configuration
+   AUTH0_DOMAIN=your-auth0-domain
+   AUTH0_CLIENT_ID=your-auth0-client-id
+   AUTH0_CLIENT_SECRET=your-auth0-client-secret
+   AUTH0_CALLBACK_URL=http://localhost:3000/callback # Adjust this URL for your environment
+   ```
+
+   Replace `your-db-connection-string`, `your-auth0-domain`, `your-auth0-client-id`, `your-auth0-client-secret` with your specific database and Auth0 credentials.
+
+2. You can also modify other configuration options in the `.env` file as needed for your application.
+
+## Usage
+
+To start the application, run the following command:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be accessible at `http://localhost:3000` by default. You can change the port .
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Here are the environment variables required for the web:
 
-## Learn More
+- `DATABASE_URL`: The hostname or IP address of your PostgreSQL database server.connection string provided from the database eg. formatted:postgresql://[database-user]:[database-password]@[database-host]/[database-name]?schema=public
 
-To learn more about Next.js, take a look at the following resources:
+- `AUTH0_DOMAIN`: Your Auth0 application's domain.
+- `AUTH0_CLIENT_ID`: The Client ID of your Auth0 application.
+- `AUTH0_CLIENT_SECRET`: The Client Secret of your Auth0 application.
+- `AUTH0_CALLBACK_URL`: The callback URL for Auth0 authentication.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+We welcome contributions to improve . If you find a bug, have a feature request, or want to contribute code, please open an issue or create a pull request on our [GitHub repository](https://github.com/your-username/myapp).
