@@ -1,0 +1,7 @@
+export const tibetanRegex = /^[\u0F00-\u0FFF\u0F00-\u0FFF\s]+$/;
+export const typeofMinaOptions = [
+    "རྩོམ་སྒྲིག་པ་",
+    "གཏེར་སྟོན་",
+    "ལོ་ཙཱ་བ་",
+    "རྩོམ་པ་པོ་",
+  ] as const

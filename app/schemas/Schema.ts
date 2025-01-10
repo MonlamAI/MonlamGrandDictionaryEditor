@@ -1,0 +1,43 @@
+import { z } from "zod"
+import { tibetanRegex } from "@/app/utils/util"
+
+export const PublisherSchema = z.object({
+  name: z
+    .string()
+    .min(3, "མིང་ཡིག་འབྲུ་གསུམ་ཡན་དགོས།")
+    .regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+  location: z
+    .string()
+    .min(3, "ཆགས་ཡུལ་ཡིག་འབྲུ་གསུམ་ཡན་དགོས།")
+    .regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+})
+
+export const personSchema = z.object({
+    type: z.string().min(1, "རིགས་འདེམས་རོགས།"),
+    name: z
+      .string()
+      .min(3, "མིང་ཡིག་འབྲུ་གསུམ་ཡན་དགོས།")
+      .regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    year_of_birth: z.number().min(1, "སྐྱེས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།"),
+    year_of_death: z.number().min(1, "འདས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།"),
+    nationality: z
+      .string()
+      .min(2, "མི་རིགས་ཡིག་འབྲུ་གཉིས་ཡན་དགོས།")
+      .regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+  });
+
+
+
+export const bookSchema = z.object({
+    title: z.string().min(1, "ངེས་པར་དུ་འབྲི་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    shortentitle: z.string().min(1, "ངེས་པར་དུ་འབྲི་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    year_of_publish: z.number().min(1, "ངེས་པར་དུ་འབྲི་དགོས།"),
+    collection: z.string().regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    print_methodId: z.string(),
+    editorId: z.string(),
+    tertonId: z.string(),
+    authorId: z.string(),
+    translatorId: z.string(),
+    digital_ref: z.string(),
+    publisherId: z.string(),
+  });
