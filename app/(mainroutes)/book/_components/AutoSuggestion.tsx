@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import DetailsPopup from "./DetailsPopup";
 import { filterSuggestions } from "@/app/utils/util";
+import { FaPlus } from "@/app/utils/Icon";
+import PersonModal from "./PersonModal";
 
 const AutoSuggestion = ({
   label,
@@ -18,6 +20,7 @@ const AutoSuggestion = ({
   type?: 'person' | 'publisher';
 }) => {
   const [inputValue, setInputValue] = useState("");
+  const [showmodal, setShowmodal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -120,8 +123,15 @@ const AutoSuggestion = ({
               </div>
             )}
           </div>
+          <div  onClick={() => setShowmodal(!showmodal)} className="absolute right-0 top-0 flex items-center justify-center w-8 h-8 bg-white rounded-full cursor-pointer">
+              <p>སྣོན་པ། </p>
+              <FaPlus />
+            </div>
         </div>
       )}
+      {
+        showmodal && <PersonModal isOpen={showmodal} handleClose={() => setShowmodal(!showmodal)} />
+      }
     </div>
   );
 };
