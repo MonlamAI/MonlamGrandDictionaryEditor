@@ -41,3 +41,13 @@ export const bookSchema = z.object({
     digital_ref: z.string(),
     publisherId: z.string(),
   });
+
+
+export const WordSchema = z.object({
+    lemma: z.string().min(1).regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    is_mordern: z.boolean(),
+    is_reviewed: z.boolean(),
+    is_frequent: z.boolean(),
+    originId: z.string(),
+  });
+  

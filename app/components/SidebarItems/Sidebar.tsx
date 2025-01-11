@@ -25,7 +25,7 @@ const Sidebar = () => {
           <div className="space-y-6">
             <IoIosSearch className="h-5 w-5 cursor-pointer"  onClick={() => setShow(true)} />
             <IoHomeOutline className="h-5 w-5 cursor-pointer" onClick={()=>router.push("/")}  />
-            <FaPlus className="h-5 w-5 cursor-pointer" onClick={()=>router.push("/Tsigsar")} />
+            <FaPlus className="h-5 w-5 cursor-pointer" onClick={()=>router.push("/word")} />
           </div>
           <div>
             <p className="font-monlam text-xs [writing-mode:vertical-rl] rotate-180">
