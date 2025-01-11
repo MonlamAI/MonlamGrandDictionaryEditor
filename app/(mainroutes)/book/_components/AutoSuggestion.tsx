@@ -102,10 +102,7 @@ const AutoSuggestion = ({
         </div>
       </div>
       {showSuggestions && !isSubmitting && (
-        <div
-          ref={suggestionsRef}
-          className="absolute z-10 mt-1 font-monlam text-sm w-64 bg-white border border-black shadow-lg flex flex-col"
-        >
+        <div ref={suggestionsRef} className="absolute z-10 mt-1 font-monlam text-sm w-64 bg-white border border-black shadow-lg flex flex-col">
           <div className="max-h-28 overflow-y-auto">
             {filteredSuggestions.length > 0 ? (
               filteredSuggestions.map((suggestion: any) => (
@@ -123,11 +120,12 @@ const AutoSuggestion = ({
               </div>
             )}
           </div>
-          <div  onClick={() => setShowmodal(!showmodal)} className="absolute right-0 top-0 flex items-center justify-center w-8 h-8 bg-white rounded-full cursor-pointer">
+          <div onClick={() => setShowmodal(!showmodal)} className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer">
               <p>སྣོན་པ། </p>
               <FaPlus />
             </div>
         </div>
+        
       )}
       {
         showmodal && <PersonModal isOpen={showmodal} handleClose={() => setShowmodal(!showmodal)} />
