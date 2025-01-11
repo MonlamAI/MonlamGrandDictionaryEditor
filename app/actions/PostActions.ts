@@ -1,7 +1,7 @@
 'use server'
 
 import { z } from "zod"
-import { bookSchema, personSchema, PublisherSchema } from "../schemas/Schema"
+import { bookSchema, personSchema, PublisherSchema, SenseSchema } from "../schemas/Schema"
 import axios from "axios"
 import { cleanData, typeMap } from "../utils/util"
 
@@ -82,3 +82,6 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
   }
 }
 
+export async function createSense(data: z.infer<typeof SenseSchema>) {
+  console.log(data)
+}

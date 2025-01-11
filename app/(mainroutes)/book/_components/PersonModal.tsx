@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
 import ReactPortal from '@/app/Wrapper/ReactPortal'
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -70,7 +69,7 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
         <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <Image src="/images/logo.webp" alt="Logo" width={48} height={48} className="rounded-md" />
+              <img src="/images/logo.webp" alt="Logo" width={48} height={48} className="rounded-md" />
             </div>
             <button onClick={handleClose} className="text-black bg-white p-2 rounded-full hover:bg-gray-100">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>

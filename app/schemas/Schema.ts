@@ -50,4 +50,17 @@ export const WordSchema = z.object({
     is_frequent: z.boolean(),
     originId: z.string(),
   });
-  
+
+
+
+export const SenseSchema = z.object({
+  description: z.string(),
+  has_illustration: z.boolean(),
+  example_sentence: z.string(),
+  posId: z.string(),
+  name_entityId: z.string(),
+  registerId: z.string(),
+  wordId: z.number(),
+  citationIds: z.array(z.string()),
+  domainIds: z.array(z.string())
+});
