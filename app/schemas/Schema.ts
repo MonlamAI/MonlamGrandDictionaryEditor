@@ -30,9 +30,9 @@ export const personSchema = z.object({
 
 export const bookSchema = z.object({
     title: z.string().min(1, "ངེས་པར་དུ་འབྲི་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
-    shortentitle: z.string().min(1, "ངེས་པར་དུ་འབྲི་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    abbreviated_title: z.string().min(1, "ངེས་པར་དུ་འབྲི་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
     year_of_publish: z.number().min(1, "ངེས་པར་དུ་འབྲི་དགོས།"),
-    collection: z.string().regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
+    collection_name: z.string().regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
     print_methodId: z.string(),
     editorId: z.string(),
     tertonId: z.string(),

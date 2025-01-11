@@ -2,7 +2,8 @@ import React from 'react'
 
 const Word = () => {
   return (
-    <div>Word</div>
+    <div>Word1
+    </div>
   )
 }
 

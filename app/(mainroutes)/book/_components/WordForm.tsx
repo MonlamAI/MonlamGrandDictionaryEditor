@@ -1,34 +1,39 @@
 'use client'
+import { createBook } from '@/app/actions/PostActions';
 import Submits from '@/app/components/Buttons/Submit';
+import SuccessMessage from '@/app/components/Card/SuccessMessage';
 import { bookSchema } from '@/app/schemas/Schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 type WordType = z.infer<typeof bookSchema>
 const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,AuthorData}:any) => {
- 
-  const {register,handleSubmit, formState: { errors, isSubmitting },
+ const [showSuccess, setShowSuccess] = React.useState(false)
+ const router = useRouter()
+  const {register,handleSubmit,reset, formState: { errors, isSubmitting },
   } = useForm<WordType>({
     resolver: zodResolver(bookSchema),
     mode: 'onChange',
   });
 
-  // const mutation = useMutation({
-  //   mutationFn: createPublisher,
-  //   onSuccess: () => {
-  //     reset()
-  //     setShowSuccess(true)
-  //     setTimeout(() => {
-  //       setShowSuccess(false)
-  //       router.push("/")
-  //     }, 3000)
-  //   },
-  // })
+  const mutation = useMutation({
+    mutationFn: createBook,
+    onSuccess: () => {
+      reset()
+      setShowSuccess(true)
+      setTimeout(() => {
+        setShowSuccess(false)
+        router.push("/")
+      }, 3000)
+    },
+  })
   const onSubmit = async (data: WordType) => {
-    console.log(data)
+     console.log(data)
+    mutation.mutate(data)
   }
   return (
     <div>
@@ -48,11 +53,11 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         <div className="flex flex-col">
           <div className="flex items-center border-b border-black pb-2 w-fit">
             <label >མཚན་བྱང་བསྡུས་པ།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("shortentitle")} disabled={isSubmitting}/>
+            <input className="ml-2 outline-none text-lg w-64" {...register("abbreviated_title")} disabled={isSubmitting}/>
           </div>
-          {errors.shortentitle && (
+          {errors.abbreviated_title && (
             <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.shortentitle.message}
+              *{errors.abbreviated_title.message}
             </span>
           )}
         </div>
@@ -78,17 +83,12 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         <div className="flex mt-3 max-sm:flex-col justify-between gap-4">
         <div className="flex flex-col">
           <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label htmlFor="name">རྩོམ་སྒྲིག་གི་རྣམ་པ།</label>
-            <input
-              id="name"
-              className="ml-2 outline-none text-lg w-64"
-              {...register("collection")}
-              disabled={isSubmitting}
-            />
+            <label>རྩོམ་སྒྲིག་གི་རྣམ་པ།</label>
+            <input className="ml-2 outline-none text-lg w-64" {...register("collection_name")} disabled={isSubmitting}/>
           </div>
-          {errors.collection && (
+          {errors.collection_name && (
             <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.collection.message}
+              *{errors.collection_name.message}
             </span>
           )}
         </div>
@@ -117,13 +117,8 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         <div className="flex max-sm:flex-col justify-between mt-3 gap-4">
         <div className="flex flex-col">
           <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label htmlFor="name">རྩོམ་སྒྲིག་པ་མིང་།</label>
-            <input
-              id="name"
-              className="ml-2 outline-none text-lg w-64"
-              {...register("editorId")}
-              disabled={isSubmitting}
-            />
+            <label >རྩོམ་སྒྲིག་པ་མིང་།</label>
+            <input className="ml-2 outline-none text-lg w-64" {...register("editorId")} disabled={isSubmitting}/>
           </div>
           {errors.editorId && (
             <span className="text-red-500 font-monlam text-sm ml-2">
@@ -134,13 +129,8 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
          
         <div className="flex  flex-col">
           <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label htmlFor="name">གཏེར་སྟོན་མིང་།</label>
-            <input
-              id="name"
-              className="ml-2 outline-none text-lg w-64"
-              {...register("tertonId")}
-              disabled={isSubmitting}
-            />
+            <label >གཏེར་སྟོན་མིང་།</label>
+            <input className="ml-2 outline-none text-lg w-64" {...register("tertonId")} disabled={isSubmitting}/>
           </div>
           {errors.tertonId && (
             <span className="text-red-500 font-monlam text-sm ml-2">
@@ -153,13 +143,8 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         <div className="flex max-sm:flex-col justify-between mt-3 gap-4">
         <div className="flex flex-col">
           <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label htmlFor="name">རྩོམ་པ་པོ་མིང་།</label>
-            <input
-              id="name"
-              className="ml-2 outline-none text-lg w-64"
-              {...register("authorId")}
-              disabled={isSubmitting}
-            />
+            <label>རྩོམ་པ་པོ་མིང་།</label>
+            <input className="ml-2 outline-none text-lg w-64" {...register("authorId")} disabled={isSubmitting}/>
           </div>
           {errors.authorId && (
             <span className="text-red-500 font-monlam text-sm ml-2">
@@ -169,17 +154,12 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         </div>
         <div className="flex flex-col">
           <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label htmlFor="name">ལོ་ཙཱ་བ་མིང་།</label>
-            <input
-              id="name"
-              className="ml-2 outline-none text-lg w-64"
-              {...register("translatorId")}
-              disabled={isSubmitting}
-            />
+            <label >ལོ་ཙཱ་བ་མིང་།</label>
+            <input className="ml-2 outline-none text-lg w-64" {...register("translatorId")} disabled={isSubmitting}/>
           </div>
-          {errors.tertonId && (
+          {errors.translatorId && (
             <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.tertonId.message}
+              *{errors.translatorId.message}
             </span>
           )}
         </div>
@@ -187,13 +167,8 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         </div>
         <div className="flex  flex-col mt-3">
           <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label htmlFor="name">དཔེ་སྐྲུན་པ།</label>
-            <input
-              id="name"
-              className="ml-2 outline-none text-lg w-64"
-              {...register("publisherId")}
-              disabled={isSubmitting}
-            />
+            <label >དཔེ་སྐྲུན་པ།</label>
+            <input className="ml-2 outline-none text-lg w-64" {...register("publisherId")} disabled={isSubmitting}/>
           </div>
           {errors.publisherId && (
             <span className="text-red-500 font-monlam text-sm ml-2">
@@ -205,12 +180,7 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         <div className="flex flex-col mt-3">
           <div className="flex items-center font-inter text-sm border-b border-black pb-2 w-fit">
             <label className=' font-bold' >BDRC LINK</label>
-            <input
-              id="name"
-              className="ml-2 outline-none w-64"
-              {...register("digital_ref")}
-              disabled={isSubmitting}
-            />
+            <input className="ml-2 outline-none w-64" {...register("digital_ref")} disabled={isSubmitting}/>
           </div>
           {errors.digital_ref && (
             <span className="text-red-500 font-monlam text-sm ml-2">
@@ -224,6 +194,13 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
           />
         </div>
       </form>
+      {mutation.isError && (
+        <div className="bg-red-100 border w-fit right-0 absolute border-red-400 text-red-700 px-4 py-3 rounded-l-md mt-4">
+          {mutation.error.message}
+        </div>
+      )}
+
+      {showSuccess && <SuccessMessage />}
     </div>
   )
 }

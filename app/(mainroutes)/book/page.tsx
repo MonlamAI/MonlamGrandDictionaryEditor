@@ -13,7 +13,7 @@ import WordForm from './_components/WordForm'
 const Word = async () => {
   const [PublisherData,AuthorData,EditorData,TertonData,TranslatorData,PrintMethodData] = await Promise.all([
     getPublisher(),getAuthor(),getEditor(),getTerton(),getTranslator(),getPrintMethod()])
-
+    console.log(TranslatorData)
   return (
     <div className="font-monlam p-2 text-lg sm:ml-16 ml-4 mb-9">
       <img src="/images/logo.webp" className="w-16 rounded-md" alt="Logo" />
