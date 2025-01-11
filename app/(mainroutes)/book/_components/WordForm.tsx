@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation';
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import AutoSuggestion from './AutoSuggestion';
+
 
 type WordType = z.infer<typeof bookSchema>
 const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,AuthorData}:any) => {
@@ -28,11 +30,11 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
       setTimeout(() => {
         setShowSuccess(false)
         router.push("/")
-      }, 3000)
+      }, 2000)
     },
   })
   const onSubmit = async (data: WordType) => {
-     console.log(data)
+    //  console.log(data)
     mutation.mutate(data)
   }
   return (
@@ -115,68 +117,19 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
           </div>
         </div>
         <div className="flex max-sm:flex-col justify-between mt-3 gap-4">
-        <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >རྩོམ་སྒྲིག་པ་མིང་།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("editorId")} disabled={isSubmitting}/>
-          </div>
-          {errors.editorId && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.editorId.message}
-            </span>
-          )}
-        </div>
-         
-        <div className="flex  flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >གཏེར་སྟོན་མིང་།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("tertonId")} disabled={isSubmitting}/>
-          </div>
-          {errors.tertonId && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.tertonId.message}
-            </span>
-          )}
-        </div>
+          <AutoSuggestion label="རྩོམ་སྒྲིག་པ་མིང་།" name="editorId" data={EditorData} register={register} isSubmitting={isSubmitting}/>
+        
+        <AutoSuggestion label="གཏེར་སྟོན་མིང་།" name="tertonId" data={TertonData} register={register} isSubmitting={isSubmitting}/>
+
+       
           
         </div>
         <div className="flex max-sm:flex-col justify-between mt-3 gap-4">
-        <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label>རྩོམ་པ་པོ་མིང་།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("authorId")} disabled={isSubmitting}/>
-          </div>
-          {errors.authorId && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.authorId.message}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >ལོ་ཙཱ་བ་མིང་།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("translatorId")} disabled={isSubmitting}/>
-          </div>
-          {errors.translatorId && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.translatorId.message}
-            </span>
-          )}
-        </div>
-          
-        </div>
-        <div className="flex  flex-col mt-3">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >དཔེ་སྐྲུན་པ།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("publisherId")} disabled={isSubmitting}/>
-          </div>
-          {errors.publisherId && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.publisherId.message}
-            </span>
-          )}
-        </div>
+          <AutoSuggestion label="རྩོམ་པ་པོ་མིང་།" name="authorId" data={AuthorData} register={register} isSubmitting={isSubmitting}/>
         
+        <AutoSuggestion label="ལོ་ཙཱ་བ་མིང་།" name="translatorId" data={TranslatorData} register={register} isSubmitting={isSubmitting}/>
+        </div>
+        <AutoSuggestion label="དཔེ་སྐྲུན་མིང་།" name="publisherId" data={pubdata} register={register} isSubmitting={isSubmitting} type="publisher"/>        
         <div className="flex flex-col mt-3">
           <div className="flex items-center font-inter text-sm border-b border-black pb-2 w-fit">
             <label className=' font-bold' >BDRC LINK</label>
