@@ -129,7 +129,9 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
         
         <AutoSuggestion label="ལོ་ཙཱ་བ་མིང་།" name="translatorId" data={TranslatorData} register={register} isSubmitting={isSubmitting}/>
         </div>
+        <div className=' mt-2'>
         <AutoSuggestion label="དཔེ་སྐྲུན་མིང་།" name="publisherId" data={pubdata} register={register} isSubmitting={isSubmitting} type="publisher"/>        
+        </div>
         <div className="flex flex-col mt-3">
           <div className="flex items-center font-inter text-sm border-b border-black pb-2 w-fit">
             <label className=' font-bold' >BDRC LINK</label>

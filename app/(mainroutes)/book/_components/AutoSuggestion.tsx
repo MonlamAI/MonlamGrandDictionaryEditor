@@ -128,7 +128,7 @@ const AutoSuggestion = ({
         
       )}
       {
-        showmodal && <PersonModal isOpen={showmodal} handleClose={() => setShowmodal(!showmodal)} />
+        showmodal && <PersonModal isOpen={showmodal} handleClose={() => {setShowmodal(false); setInputValue("");}} />
       }
     </div>
   );

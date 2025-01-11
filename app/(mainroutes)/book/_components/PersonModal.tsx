@@ -9,7 +9,6 @@ import { useMutation } from "@tanstack/react-query"
 import { z } from "zod"
 import { createPerson } from "@/app/actions/PostActions"
 import { typeofMinaOptions } from "@/app/utils/util"
-import SuccessMessage from "@/app/components/Card/SuccessMessage"
 import { personSchema } from "@/app/schemas/Schema"
 
 type InputMina = z.infer<typeof personSchema>
@@ -42,8 +41,15 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
   })
 
   const onSubmit = async (data: InputMina) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
+  
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+    }
+  }, [isOpen, reset]);
+  
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -53,7 +59,11 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
   }, [isOpen])
 
   if (!isOpen) return null
-
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleSubmit(onSubmit)(e)
+  }
   return (
     <ReactPortal wrapperId="modal-wrapper">
       <div className="fixed font-monlam top-0 left-0 w-screen h-screen bg-neutral-800 bg-opacity-50 z-50 flex items-center justify-center">
@@ -67,7 +77,7 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form  onSubmit={handleFormSubmit}   className="space-y-4">
             <div className="flex items-center space-x-2">
               <label className="shrink-0">རིགས།</label>
               <select
