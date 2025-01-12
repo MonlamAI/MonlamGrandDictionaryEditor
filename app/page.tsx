@@ -27,7 +27,7 @@ const pathlist = [
 const Home = () => {
   const router = useRouter();
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center ">
+    <div className="flex w-full mt-7 flex-col items-center justify-center ">
       <div className="flex items-center justify-center mt-8 mb-2">
         <img className=" w-16 h-16 rounded-md" src="/images/logo.webp" alt="Logo" />
       </div>
