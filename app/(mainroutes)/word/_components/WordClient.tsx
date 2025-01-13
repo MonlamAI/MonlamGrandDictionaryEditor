@@ -7,7 +7,7 @@ import WordForm from "./wordForm";
 import Sense from "./Sense";
 import SenseCard from "./SenseCard";
 
-export default function WordClient({bookData, originData, posData, registerData, nameEntityData }: any) {
+export default function WordClient({bookData, originData, posData, registerData, nameEntityData,Authordata }: any) {
   const [isSenseOpen, setisSenseOpen] = useState(false);
   const [senses, setSenses] = useState<any[]>([]);
   const [editingSense, setEditingSense] = useState<any>(null);
@@ -71,6 +71,7 @@ export default function WordClient({bookData, originData, posData, registerData,
           initialData={editingSense}
           bookData={bookData}
           wordId={wordId} // Pass the wordId to Sense component
+          Authordata={Authordata}
         />
       )}
 

@@ -7,15 +7,23 @@ interface Book {
   id: string;
   title: string;
   abbreviated_title: string;
-  author: { name: string };
-  translator: { name: string };
-  terton: { name: string };
-  editor: { name: string };
-  publisher: { name: string };
+  authorId: string;
+  translatorId: string;
+  tertonId: string;
+  editorId: string;
+  publisherId: string;
   collection_name: string;
   year_of_publish: string;
   print_method: { name: string };
   digital_ref: string;
+}
+
+interface Author {
+  id: string;
+  name: string;
+  year_of_birth: number;
+  year_of_death: number;
+  nationality: string;
 }
 
 interface CitationField {
@@ -33,7 +41,13 @@ interface FormData {
   citations: CitationField[];
 }
 
-const CitationForm = ({ bookData }: { bookData: Book[] }) => {
+const CitationForm = ({ 
+  bookData, 
+  authorData = [] 
+}: { 
+  bookData: Book[], 
+  authorData?: Author[] 
+}) => {
   const { control, register, watch } = useForm<FormData>({
     defaultValues: {
       citations: []
@@ -73,6 +87,11 @@ const CitationForm = ({ bookData }: { bookData: Book[] }) => {
     return bookData.find(book => book.id === id);
   };
 
+  const findAuthorById = (id: string): Author | undefined => {
+    console.log('i am here')
+    return authorData.find(author => author.id === id);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-x-4 items-center">
@@ -89,6 +108,13 @@ const CitationForm = ({ bookData }: { bookData: Book[] }) => {
         {fields.map((field, index) => {
           const bookId = watch(`citations.${index}.bookId`);
           const selectedBook = findBookById(bookId);
+          let author;
+          console.log(selectedBook)
+          if (selectedBook) {
+            author = findAuthorById(selectedBook.authorId);
+            console.log(author)
+          }
+
           return (
             <div
               key={field.id}
@@ -139,33 +165,64 @@ const CitationForm = ({ bookData }: { bookData: Book[] }) => {
                   </div>
 
                   {selectedBook && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      {selectedBook.abbreviated_title && (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-600">མཚན་བྱང་བསྡུས་པ།</span>
-                          <span className="font-medium">{selectedBook.abbreviated_title}</span>
+                    <>
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        {selectedBook.abbreviated_title && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-600">མཚན་བྱང་བསྡུས་པ།</span>
+                            <span className="font-medium">{selectedBook.abbreviated_title}</span>
+                          </div>
+                        )}
+                        {selectedBook.collection_name && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-600">རྩོམ་སྒྲིག་གི་རྣམ་པ།</span>
+                            <span className="font-medium">{selectedBook.collection_name}</span>
+                          </div>
+                        )}
+                        {selectedBook.year_of_publish && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-600">པར་སྐྲུན་ལོ།</span>
+                            <span className="font-medium">{selectedBook.year_of_publish}</span>
+                          </div>
+                        )}
+                        {selectedBook.digital_ref && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-600">BDRC Link</span>
+                            <span className="font-medium">{selectedBook.digital_ref}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {author && (
+                        <div className="mt-4 border-t pt-4">
+                          <h3 className="text-lg font-semibold mb-3">རྩོམ་པ་པོའི་ཞིབ་ཕྲ།</h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-gray-600">མཚན།</span>
+                              <span className="font-medium">{author.name}</span>
+                            </div>
+                            {author.year_of_birth !== 0 && (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-gray-600">འཁྲུངས་ལོ།</span>
+                                <span className="font-medium">{author.year_of_birth}</span>
+                              </div>
+                            )}
+                            {author.year_of_death !== 0 && (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-gray-600">འདས་ལོ།</span>
+                                <span className="font-medium">{author.year_of_death}</span>
+                              </div>
+                            )}
+                            {author.nationality && (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-gray-600">རྒྱལ་ཁོངས།</span>
+                                <span className="font-medium">{author.nationality}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
-                      {selectedBook.collection_name && (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-600">རྩོམ་སྒྲིག་གི་རྣམ་པ།</span>
-                          <span className="font-medium">{selectedBook.collection_name}</span>
-                        </div>
-                      )}
-                      {selectedBook.year_of_publish && (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-600">པར་སྐྲུན་ལོ།</span>
-                          <span className="font-medium">{selectedBook.year_of_publish}</span>
-                        </div>
-                      )}
-                
-                      {selectedBook.digital_ref && (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-600">BDRC Link</span>
-                          <span className="font-medium">{selectedBook.digital_ref}</span>
-                        </div>
-                      )}
-                    </div>
+                    </>
                   )}
 
                   <div className="mt-4">

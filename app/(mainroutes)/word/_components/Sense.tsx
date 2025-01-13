@@ -18,10 +18,11 @@ interface SenseProps {
   onSubmit: (data: InputSense) => void;
   initialData?: InputSense;
   wordId:any,
-  bookData:any
+  bookData:any,
+  Authordata:any
 }
 
-const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData,wordId,bookData}: SenseProps) => {
+const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData,wordId,bookData,Authordata}: SenseProps) => {
   const {
     register,
     handleSubmit,
@@ -182,7 +183,7 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
                 </button>
               </div>
             </form>
-            <CitationForm bookData={bookData}/>
+            <CitationForm bookData={bookData} authorData={Authordata}/>
           </div>
         </div>
       </div>
