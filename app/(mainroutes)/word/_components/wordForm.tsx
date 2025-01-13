@@ -14,7 +14,7 @@ export type InputWord = z.infer<typeof WordSchema>
 
 interface WordFormProps {
   data: any;
-  onSubmitSuccess: () => void;
+  onSubmitSuccess: (wordId: number) => void;  // Modified to pass wordId
 }
 
 const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
@@ -40,9 +40,12 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
 
   const mutation = useMutation({
     mutationFn: createWord,
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log('Word creation response:', response) // Log the response
+      const wordId = response.data.id // Extract the word ID
+      console.log('Created word ID:', wordId) // Log the word ID
       setShowSuccess(true)
-      onSubmitSuccess() // Call the callback when submission is successful
+      onSubmitSuccess(wordId) // Pass the word ID to the parent
       setTimeout(() => {
         setShowSuccess(false)
       }, 3000)
@@ -51,7 +54,7 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
 
   const onSubmit: SubmitHandler<InputWord> = (data) => {
     mutation.mutate(data)
-    console.log(data);
+    console.log('Form data submitted:', data)
   };
 
   return (
@@ -75,7 +78,7 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
                 <Toggle register={register} value="is_mordern" />
               </div>
             </div>
-
+            
             <div className="flex items-center">
               <p className="ml-12">རྒྱུན་སྤྱོད།</p>
               <div className="mb-2">
@@ -83,7 +86,7 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
               </div>
             </div>
           </div>
-
+          
           <div className="flex-1 flex items-center mt-1 space-x-2">
             <label className="shrink-0">འབྱུང་ཁུངས།</label>
             <select

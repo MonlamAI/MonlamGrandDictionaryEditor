@@ -16,9 +16,10 @@ interface SenseProps {
   nameEntityData: any;
   onSubmit: (data: InputSense) => void;
   initialData?: InputSense;
+  wordId:any
 }
 
-const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData}: SenseProps) => {
+const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData,wordId}: SenseProps) => {
   const {
     register,
     handleSubmit,

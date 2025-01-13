@@ -11,7 +11,7 @@ export default function WordClient({ originData, posData, registerData, nameEnti
   const [isSenseOpen, setisSenseOpen] = useState(false);
   const [senses, setSenses] = useState<any[]>([]);
   const [editingSense, setEditingSense] = useState<any>(null);
-  const [isWordSubmitted, setIsWordSubmitted] = useState(false);
+  const [wordId, setWordId] = useState<number | null>(null);
 
   const handleAddSense = (senseData: any) => {
     if (editingSense) {
@@ -30,8 +30,9 @@ export default function WordClient({ originData, posData, registerData, nameEnti
     setisSenseOpen(true);
   };
 
-  const handleWordSubmitSuccess = () => {
-    setIsWordSubmitted(true);
+  const handleWordSubmitSuccess = (id: number) => {
+    setWordId(id);
+    console.log('Word ID set in client:', id); // Log the word ID when it's set
   };
 
   return (
@@ -45,15 +46,15 @@ export default function WordClient({ originData, posData, registerData, nameEnti
 
       <button
         className={`flex text-sm p-2 justify-center items-center mt-8 w-fit rounded-md bg-surface-light border space-x-2 transition-all duration-150 ${
-          isWordSubmitted ? 'hover:opacity-80' : 'opacity-50 cursor-not-allowed'
+          wordId ? 'hover:opacity-80' : 'opacity-50 cursor-not-allowed'
         }`}
         onClick={() => {
-          if (isWordSubmitted) {
+          if (wordId) {
             setisSenseOpen(true);
             setEditingSense(null);
           }
         }}
-        disabled={!isWordSubmitted}
+        disabled={!wordId}
         type="button"
       >
         <p>འགྲེལ་བཤད།</p>
@@ -68,6 +69,7 @@ export default function WordClient({ originData, posData, registerData, nameEnti
           posData={posData}
           registerData={registerData}
           initialData={editingSense}
+          wordId={wordId} // Pass the wordId to Sense component
         />
       )}
 
