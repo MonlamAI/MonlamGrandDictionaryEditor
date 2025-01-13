@@ -6,6 +6,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { RxCross2 } from '@/app/utils/Icon'
 import { z } from 'zod'
+import CitationForm from './Citation'
 
 export type InputSense = z.infer<typeof SenseSchema>
 
@@ -16,10 +17,11 @@ interface SenseProps {
   nameEntityData: any;
   onSubmit: (data: InputSense) => void;
   initialData?: InputSense;
-  wordId:any
+  wordId:any,
+  bookData:any
 }
 
-const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData,wordId}: SenseProps) => {
+const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData,wordId,bookData}: SenseProps) => {
   const {
     register,
     handleSubmit,
@@ -168,7 +170,8 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
                   </label>
                 </div>
               </div>
-
+            
+             
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -179,6 +182,7 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
                 </button>
               </div>
             </form>
+            <CitationForm bookData={bookData}/>
           </div>
         </div>
       </div>

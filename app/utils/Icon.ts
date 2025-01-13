@@ -5,6 +5,7 @@ import { FaPlus } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { SiTicktick } from "react-icons/si";
 import { FaEdit } from "react-icons/fa";
+import { FaAngleDown ,FaAngleUp} from "react-icons/fa6";
 
 export {
     IoIosSearch,
@@ -14,4 +15,6 @@ export {
     RxCross2,
     SiTicktick,
     FaEdit,
+    FaAngleDown,
+    FaAngleUp,
 }

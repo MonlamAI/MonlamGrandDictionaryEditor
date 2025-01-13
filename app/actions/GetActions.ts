@@ -223,3 +223,26 @@ export async function getNameEntity() {
           throw error;
     }
 }
+
+//citation
+export async function getBook(){
+    try {
+        const response = await axios.get(
+            `https://api.monlamdictionary.com/api/grand/metadata/book/list`,
+            {
+                headers: {
+                    apikey: process.env.API_KEY,
+                    accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('API Error:', error.response?.data || error.message);
+            throw new Error(`Failed to fetch publishers: ${error.message}`);
+          }
+          throw error;
+    }
+}
