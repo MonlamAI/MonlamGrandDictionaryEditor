@@ -51,7 +51,12 @@ export const WordSchema = z.object({
     originId: z.string(),
   });
 
-
+  export const CitationSchema = z.object({
+    text: z.string(),
+    location: z.object({}), 
+    bookId: z.string(),
+  });
+  
 
 export const SenseSchema = z.object({
   description: z.string().min(1,"ཉུང་མཐར་ཡང་ཡིག་འབྲུ་ ༡ ཡོད་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),

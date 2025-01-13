@@ -224,6 +224,27 @@ export async function getNameEntity() {
     }
 }
 
+export async function getDomain(){
+    try {
+        const response = await axios.get(
+            `https://api.monlamdictionary.com/api/grand/metadata/domain/list`,
+            {
+                headers: {
+                    apikey: process.env.API_KEY,
+                    accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('API Error:', error.response?.data || error.message);
+            throw new Error(`Failed to fetch publishers: ${error.message}`);
+          }
+          throw error;
+    }
+}
 //citation
 export async function getBook(){
     try {

@@ -1,14 +1,13 @@
-'use client'
-import { SenseSchema } from '@/app/schemas/Schema'
-import ReactPortal from '@/app/Wrapper/ReactPortal'
-import { zodResolver } from '@hookform/resolvers/zod'
-import React from 'react'
-import { useForm } from 'react-hook-form'
-import { RxCross2 } from '@/app/utils/Icon'
-import { z } from 'zod'
-import CitationForm from './Citation'
+import { SenseSchema } from '@/app/schemas/Schema';
+import ReactPortal from '@/app/Wrapper/ReactPortal';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { RxCross2 } from '@/app/utils/Icon';
+import { z } from 'zod';
+import CitationForm from './Citation';
 
-export type InputSense = z.infer<typeof SenseSchema>
+export type InputSense = z.infer<typeof SenseSchema>;
 
 interface SenseProps {
   onClose: () => void;
@@ -17,12 +16,36 @@ interface SenseProps {
   nameEntityData: any;
   onSubmit: (data: InputSense) => void;
   initialData?: InputSense;
-  wordId:any,
-  bookData:any,
-  Authordata:any
+  wordId: any;
+  bookData: any;
+  Authordata: any;
+  Editordata: any;
+  Tertondata: any;
+  Translatordata: any;
+  PublisherData: any;
+  printmethoddata: any;
+  domaindata:any
 }
 
-const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initialData,wordId,bookData,Authordata}: SenseProps) => {
+const Sense = ({
+  onClose,
+  domaindata,
+  posData,
+  registerData,
+  nameEntityData,
+  onSubmit,
+  initialData,
+  wordId,
+  bookData,
+  Authordata,
+  Editordata,
+  Tertondata,
+  Translatordata,
+  PublisherData,
+  printmethoddata
+}: SenseProps) => {
+  const [citationIds, setCitationIds] = React.useState<string[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -40,26 +63,31 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
       registerId: registerData[0]?.id || '',
       domainIds: [],
     },
-  })
+  });
 
   const handleFormSubmit = async (data: InputSense) => {
     try {
-      // Transform the data to match the expected format
       const formattedData = {
         ...data,
-        id: initialData?.id || Date.now(), // Add an ID if it's a new entry
+        id: initialData?.id || Date.now(),
         posId: String(data.posId),
         name_entityId: String(data.name_entityId),
         registerId: String(data.registerId),
-      }
+        wordId: wordId,
+        citationIds: citationIds
+      };
       
-      onSubmit(formattedData)
-      reset()
-      onClose() // Close the modal after successful submission
+      onSubmit(formattedData);
+      reset();
+      onClose();
     } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error('Error submitting form:', error);
     }
-  }
+  };
+
+  const handleCitationsChange = (newCitationIds: string[]) => {
+    setCitationIds(newCitationIds);
+  };
 
   return (
     <ReactPortal wrapperId="sense-wrapper">
@@ -69,6 +97,7 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
             <div className="flex justify-between items-center border-b border-gray-200 py-4 z-40 sticky top-0 bg-white">
               <h2 className="text-xl">འགྲེལ་བཤད།</h2>
               <button
+                type="button"
                 onClick={onClose}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -77,7 +106,6 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
             </div>
 
             <form onSubmit={handleSubmit(handleFormSubmit)} className="mt-6 space-y-6" autoComplete="off">
-              {/* Form fields remain the same */}
               <div className="space-y-4">
                 <div className="flex items-center">
                   <label className="w-24">འགྲེལ་བ།</label>
@@ -171,8 +199,11 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
                   </label>
                 </div>
               </div>
-            
-             
+
+              <div className="border-t pt-4">
+                
+              </div>
+
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -183,12 +214,21 @@ const Sense = ({onClose, posData, registerData, nameEntityData, onSubmit, initia
                 </button>
               </div>
             </form>
-            <CitationForm bookData={bookData} authorData={Authordata}/>
+            <CitationForm
+                  bookData={bookData}
+                  authorData={Authordata}
+                  Editordata={Editordata}
+                  Tertondata={Tertondata}
+                  Translatordata={Translatordata}
+                  PublisherData={PublisherData}
+                  printmethoddata={printmethoddata}
+                  onCitationsChange={handleCitationsChange}
+                />
           </div>
         </div>
       </div>
     </ReactPortal>
-  )
-}
+  );
+};
 
-export default Sense
+export default Sense;

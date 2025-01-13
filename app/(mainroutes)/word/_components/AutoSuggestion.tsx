@@ -1,8 +1,6 @@
-'use client'
 import React, { useState, useEffect, useRef } from "react";
 import { filterSuggestions } from "@/app/utils/util";
 import { FaPlus } from "@/app/utils/Icon";
-
 
 const AutoSuggestionBook = ({
   label,
@@ -10,7 +8,8 @@ const AutoSuggestionBook = ({
   data,
   register,
   isSubmitting,
-  type = 'person'
+  type = 'person',
+  value // Add value prop to track the selected value
 }: {
   label: string;
   name: string;
@@ -18,15 +17,26 @@ const AutoSuggestionBook = ({
   register: any;
   isSubmitting: boolean;
   type?: 'person' | 'publisher';
+  value?: string;
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [showmodal, setShowmodal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
   const suggestionsRef = useRef(null);
-  
+
   const { onChange, ...rest } = register(name);
+
+  // Update input value when value prop changes or component mounts
+  useEffect(() => {
+    if (value) {
+      const selectedItem = data.find(item => item.id === value);
+      if (selectedItem) {
+        setInputValue(selectedItem.name);
+        setSelectedPerson(selectedItem);
+      }
+    }
+  }, [value, data]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -76,13 +86,12 @@ const AutoSuggestionBook = ({
             autoComplete="off"
             disabled={isSubmitting}
           />
-          <input 
-            type="hidden" 
+          <input
+            type="hidden"
             {...rest}
             value={selectedPerson?.id || ""}
             disabled={isSubmitting}
           />
-          
         </div>
       </div>
       {showSuggestions && !isSubmitting && (
@@ -105,13 +114,11 @@ const AutoSuggestionBook = ({
             )}
           </div>
           <div onClick={() => setShowmodal(!showmodal)} className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer">
-              <p>སྣོན་པ། </p>
-              <FaPlus />
-            </div>
+            <p>སྣོན་པ། </p>
+            <FaPlus />
+          </div>
         </div>
-        
       )}
-     
     </div>
   );
 };

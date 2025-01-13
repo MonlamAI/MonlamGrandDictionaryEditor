@@ -1,7 +1,7 @@
 'use server'
 
 import { z } from "zod"
-import { bookSchema, personSchema, PublisherSchema, SenseSchema, WordSchema } from "../schemas/Schema"
+import { bookSchema, CitationSchema, personSchema, PublisherSchema, SenseSchema, WordSchema } from "../schemas/Schema"
 import axios from "axios"
 import { cleanData, typeMap } from "../utils/util"
 
@@ -90,6 +90,28 @@ export async function createWord(data: z.infer<typeof WordSchema>) {
   try {
     const response = await axios.post(
       "https://api.monlamdictionary.com/api/grand/word/create",
+      data,
+      {
+        headers: {
+          apikey: process.env.API_KEY,
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    return { success: true, data: response.data }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || "Form submission failed")
+    }
+    throw new Error("An unexpected error occurred")
+  }
+}
+
+export async function createCitation(data:z.infer<typeof CitationSchema>){
+  try {
+    const response = await axios.post(
+      "https://api.monlamdictionary.com/api/grand/metadata/citation/create",
       data,
       {
         headers: {
