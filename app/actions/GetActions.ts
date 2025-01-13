@@ -267,3 +267,72 @@ export async function getBook(){
           throw error;
     }
 }
+
+
+
+//sidebar
+
+
+const BASE_URL = 'https://api.monlamdictionary.com/api/grand';
+
+interface WordsResponse {
+  words: Word[];
+  total_count: number;
+  current_page: number;
+  total_pages: number;
+}
+
+interface Word {
+  id: number;
+  lemma: string;
+  is_modern: boolean | null;
+  is_reviewed: boolean;
+  origin: string | null;
+  sense: string | null;
+  originId: string | null;
+  is_frequent: boolean;
+}
+
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    apikey: process.env.API_KEY,
+    accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+});
+
+export async function getWords(page: number, pageSize: number): Promise<WordsResponse> {
+  try {
+    const response = await apiClient.get<WordsResponse>('/word', {
+      params: {
+        page,
+        page_size: pageSize,
+        sort_by: 'lemma',
+        sort_order: 'asc',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(`Failed to fetch words: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+export async function searchWords(query: string): Promise<WordsResponse> {
+  try {
+    const response = await apiClient.get<WordsResponse>('/word/search', {
+      params: { q: query },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(`Failed to search words: ${error.message}`);
+    }
+    throw error;
+  }
+}
