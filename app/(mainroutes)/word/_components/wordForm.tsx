@@ -2,29 +2,61 @@
 import React from 'react'
 import Submits from '@/app/components/Buttons/Submit'
 import Toggle from '@/app/components/Buttons/Toggle'
-import { WordSchema } from '@/app/schemas/Schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { WordSchema } from '@/app/schemas/Schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { createWord } from '@/app/actions/PostActions'
+import SuccessMessage from '@/app/components/Card/SuccessMessage'
 
-export type InputWord = z.infer<typeof WordSchema>;
-const wordForm = (data: any) => {
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors },
-      } = useForm<InputWord>({
-        resolver: zodResolver(WordSchema),
-        mode: "onChange",
-      });
-    
-      const onSubmit: SubmitHandler<InputWord> = (data) => {
-        console.log(data);
-        reset();
-      };
+export type InputWord = z.infer<typeof WordSchema>
+
+interface WordFormProps {
+  data: any;
+  onSubmitSuccess: () => void;
+}
+
+const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
+  const [showSuccess, setShowSuccess] = React.useState(false)
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<InputWord>({
+    resolver: zodResolver(WordSchema),
+    mode: "onChange",
+    defaultValues: {
+      is_reviewed: false,
+    }
+  });
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleSubmit(onSubmit)(e)
+  }
+
+  const mutation = useMutation({
+    mutationFn: createWord,
+    onSuccess: () => {
+      setShowSuccess(true)
+      onSubmitSuccess() // Call the callback when submission is successful
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 3000)
+    },
+  })
+
+  const onSubmit: SubmitHandler<InputWord> = (data) => {
+    mutation.mutate(data)
+    console.log(data);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-fit">
+    <>
+      <form onSubmit={handleFormSubmit} className="w-fit">
         <div className="flex w-full items-center border-b border-black mt-4 pb-2">
           <label className="flex-shrink-0 w-fit">མ་ཚིག</label>
           <input
@@ -58,7 +90,7 @@ const wordForm = (data: any) => {
               className="w-fit border-b border-black outline-none"
               {...register("originId")}
             >
-              {data.data.map((item:any) => (
+              {data.map((item:any) => (
                 <option key={item.id} value={item.id}>
                   {item.language}
                 </option>
@@ -66,9 +98,19 @@ const wordForm = (data: any) => {
             </select>
           </div>
         </div>
+
+        <input
+          type="hidden"
+          {...register("is_reviewed")}
+        />
+        
         <Submits />
       </form>
+      {
+        showSuccess && <SuccessMessage />
+      }
+    </>
   )
 }
 
-export default wordForm
+export default WordForm

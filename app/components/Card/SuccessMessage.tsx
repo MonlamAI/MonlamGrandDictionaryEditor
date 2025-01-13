@@ -6,7 +6,7 @@ const SuccessMessage = () => {
     <div className=' flex w-full items-center justify-between' >
       <div className=' font-semibold space-x-2 flex items-center justify-center'>
       <SiTicktick/>  
-      <p>Submitted Successfully</p>
+      <p>Saved Successfully</p>
       </div>
       <div>
         <RxCross2/>

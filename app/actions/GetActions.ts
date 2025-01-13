@@ -157,3 +157,69 @@ export async function getOrigin() {
           throw error;
     }
 }
+
+export async function getPos(){
+    try {
+        const response = await axios.get(
+            `https://api.monlamdictionary.com/api/grand/metadata/pos/list`,
+            {
+                headers: {
+                    apikey: process.env.API_KEY,
+                    accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('API Error:', error.response?.data || error.message);
+            throw new Error(`Failed to fetch publishers: ${error.message}`);
+          }
+          throw error;
+    }
+}
+
+export async function getRegister() {
+    try {
+        const response = await axios.get(
+            `https://api.monlamdictionary.com/api/grand/metadata/register/list`,
+            {
+                headers: {
+                    apikey: process.env.API_KEY,
+                    accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('API Error:', error.response?.data || error.message);
+            throw new Error(`Failed to fetch publishers: ${error.message}`);
+          }
+          throw error;
+    }
+}
+
+export async function getNameEntity() {
+    try {
+        const response = await axios.get(
+            `https://api.monlamdictionary.com/api/grand/metadata/name_entity/list`,
+            {
+                headers: {
+                    apikey: process.env.API_KEY,
+                    accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('API Error:', error.response?.data || error.message);
+            throw new Error(`Failed to fetch publishers: ${error.message}`);
+          }
+          throw error;
+    }
+}

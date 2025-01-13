@@ -4,11 +4,14 @@ import { RiArrowRightSLine } from "react-icons/ri";
 import { FaPlus } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { SiTicktick } from "react-icons/si";
+import { FaEdit } from "react-icons/fa";
+
 export {
     IoIosSearch,
     IoHomeOutline,
     RiArrowRightSLine,
     FaPlus,
     RxCross2,
-    SiTicktick
+    SiTicktick,
+    FaEdit,
 }

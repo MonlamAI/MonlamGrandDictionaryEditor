@@ -45,8 +45,8 @@ export const bookSchema = z.object({
 
 export const WordSchema = z.object({
     lemma: z.string().min(1).regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
-    is_mordern: z.boolean(),
     is_reviewed: z.boolean(),
+    is_mordern: z.boolean(),
     is_frequent: z.boolean(),
     originId: z.string(),
   });
@@ -54,13 +54,12 @@ export const WordSchema = z.object({
 
 
 export const SenseSchema = z.object({
-  description: z.string(),
+  description: z.string().min(1,"ཉུང་མཐར་ཡང་ཡིག་འབྲུ་ ༡ ཡོད་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
   has_illustration: z.boolean(),
-  example_sentence: z.string(),
+  example_sentence: z.string().min(1,"ཉུང་མཐར་ཡང་ཡིག་འབྲུ་ ༡ ཡོད་དགོས།").regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
   posId: z.string(),
   name_entityId: z.string(),
   registerId: z.string(),
-  wordId: z.number(),
-  citationIds: z.array(z.string()),
-  domainIds: z.array(z.string())
+  domainIds: z.array(z.string()),
+ 
 });
