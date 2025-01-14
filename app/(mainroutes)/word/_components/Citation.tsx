@@ -1,11 +1,11 @@
-import React from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { FaAngleDown, FaAngleUp } from '@/app/utils/Icon';
-import AutoSuggestionBook from './AutoSuggestion';
-import { z } from 'zod';
-import axios from 'axios';
-import { createCitation } from '@/app/actions/PostActions';
+import React from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { FaAngleDown, FaAngleUp } from "@/app/utils/Icon";
+import AutoSuggestionBook from "./AutoSuggestion";
+import { z } from "zod";
+import axios from "axios";
+import { createCitation } from "@/app/actions/PostActions";
 
 const LocationSchema = z.object({
   volume: z.string().optional(),
@@ -90,39 +90,54 @@ const CitationForm = ({
   Translatordata = [],
   PublisherData = [],
   printmethoddata = [],
-  onCitationsChange
+  onCitationsChange,
 }: CitationFormProps) => {
   const { control, register, watch } = useForm<FormData>({
     defaultValues: {
-      citations: []
-    }
+      citations: [],
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "citations"
+    name: "citations",
   });
 
   const [openStates, setOpenStates] = React.useState<boolean[]>([]);
   const [citationIds, setCitationIds] = React.useState<string[]>([]);
-
+  const handleAddCitation = () => {
+    append({
+      text: "",
+      bookId: "",
+      location: {},
+    });
+    setOpenStates((prev) => [...prev, true]);
+    // Also extend the citationIds array
+    setCitationIds((prev) => [...prev, ""]);
+  };
   const createCitationMutation = useMutation({
-    mutationFn:createCitation,
+    mutationFn: createCitation,
     onSuccess: (data, variables, context) => {
-      const index = fields.findIndex(field => 
-        field.bookId === variables.bookId && field.text === variables.text
-      );
+      console.log("Citation created successfully:", data);
+      console.log("Citation variables:", variables);
+      const index = fields.length - 1;
+      console.log("Using index:", index);
       if (index !== -1) {
         const newCitationIds = [...citationIds];
-        newCitationIds[index] = data.id;
+        // Make sure we're getting the ID from the correct place in the response
+        const citationId = data.data?.id || data.id;
+        newCitationIds[index] = citationId;
+        console.log("New citation IDs:", newCitationIds);
         setCitationIds(newCitationIds);
         onCitationsChange(newCitationIds);
       }
-    }
+    },
   });
 
   const handleSaveCitation = (index: number) => {
     const citation = watch(`citations.${index}`);
+    console.log("Saving citation:", citation, "at index:", index);
+
     createCitationMutation.mutate(citation);
   };
 
@@ -132,7 +147,7 @@ const CitationForm = ({
     newCitationIds.splice(index, 1);
     setCitationIds(newCitationIds);
     onCitationsChange(newCitationIds);
-    setOpenStates(prev => {
+    setOpenStates((prev) => {
       const newStates = [...prev];
       newStates.splice(index, 1);
       return newStates;
@@ -140,44 +155,44 @@ const CitationForm = ({
   };
 
   const toggleAccordion = (index: number) => {
-    setOpenStates(prev => {
+    setOpenStates((prev) => {
       const newStates = [...prev];
       newStates[index] = !newStates[index];
       return newStates;
     });
   };
 
-  const transformedBookData = bookData.map(book => ({
+  const transformedBookData = bookData.map((book) => ({
     name: book.title,
-    id: book.id
+    id: book.id,
   }));
 
   const findBookById = (id: string): Book | undefined => {
-    return bookData.find(book => book.id === id);
+    return bookData.find((book) => book.id === id);
   };
 
   const findAuthorById = (id: string): Author | undefined => {
-    return authorData.find(author => author.id === id);
+    return authorData.find((author) => author.id === id);
   };
 
   const findEditorById = (id: string): Author | undefined => {
-    return Editordata.find(author => author.id === id);
+    return Editordata.find((author) => author.id === id);
   };
 
   const findTertonById = (id: string): Author | undefined => {
-    return Tertondata.find(author => author.id === id);
+    return Tertondata.find((author) => author.id === id);
   };
 
   const findTranslatorById = (id: string): Author | undefined => {
-    return Translatordata.find(author => author.id === id);
+    return Translatordata.find((author) => author.id === id);
   };
 
   const findPublisherById = (id: string): Publisher | undefined => {
-    return PublisherData.find(pub => pub.id === id);
+    return PublisherData.find((pub) => pub.id === id);
   };
 
   const findprintmethodById = (id: string): PrintMethod | undefined => {
-    return printmethoddata.find(data => data.id === id);
+    return printmethoddata.find((data) => data.id === id);
   };
 
   return (
@@ -188,11 +203,11 @@ const CitationForm = ({
           onClick={(e) => {
             e.stopPropagation();
             append({
-              text: '',
-              bookId: '',
-              location: {}
+              text: "",
+              bookId: "",
+              location: {},
             });
-            setOpenStates(prev => [...prev, true]);
+            setOpenStates((prev) => [...prev, true]);
           }}
           className="px-4 py-2 border-gray-300 shadow border rounded-lg"
         >
@@ -228,7 +243,11 @@ const CitationForm = ({
               >
                 <span className="font-monlam">མཆན། {index + 1}</span>
                 <div className="flex items-center gap-2">
-                  {openStates[index] ? <FaAngleUp size={20} /> : <FaAngleDown size={20} />}
+                  {openStates[index] ? (
+                    <FaAngleUp size={20} />
+                  ) : (
+                    <FaAngleDown size={20} />
+                  )}
                 </div>
               </div>
 
@@ -258,48 +277,70 @@ const CitationForm = ({
                       <div className="grid grid-cols-2 gap-4 mt-4">
                         {selectedBook.abbreviated_title && (
                           <div className="flex items-center space-x-2">
-                            <span className="text-gray-600">མཚན་བྱང་བསྡུས་པ།</span>
-                            <span className="font-medium">{selectedBook.abbreviated_title}</span>
+                            <span className="text-gray-600">
+                              མཚན་བྱང་བསྡུས་པ།
+                            </span>
+                            <span className="font-medium">
+                              {selectedBook.abbreviated_title}
+                            </span>
                           </div>
                         )}
                         {selectedBook.collection_name && (
                           <div className="flex items-center space-x-2">
-                            <span className="text-gray-600">རྩོམ་སྒྲིག་གི་རྣམ་པ།</span>
-                            <span className="font-medium">{selectedBook.collection_name}</span>
+                            <span className="text-gray-600">
+                              རྩོམ་སྒྲིག་གི་རྣམ་པ།
+                            </span>
+                            <span className="font-medium">
+                              {selectedBook.collection_name}
+                            </span>
                           </div>
                         )}
                         {selectedBook.year_of_publish && (
                           <div className="flex items-center space-x-2">
                             <span className="text-gray-600">པར་སྐྲུན་ལོ།</span>
-                            <span className="font-medium">{selectedBook.year_of_publish}</span>
+                            <span className="font-medium">
+                              {selectedBook.year_of_publish}
+                            </span>
                           </div>
                         )}
                         {selectedBook.digital_ref && (
                           <div className="flex items-center space-x-2">
                             <span className="text-gray-600">BDRC Link</span>
-                            <span className="font-medium">{selectedBook.digital_ref}</span>
+                            <span className="font-medium">
+                              {selectedBook.digital_ref}
+                            </span>
                           </div>
                         )}
                         {printmethod && (
                           <div className="flex items-center space-x-2">
-                            <span className="text-gray-600">དཔར་སྐྲུན་བྱེད་སྟངས།</span>
-                            <span className="font-medium">{printmethod.name}</span>
+                            <span className="text-gray-600">
+                              དཔར་སྐྲུན་བྱེད་སྟངས།
+                            </span>
+                            <span className="font-medium">
+                              {printmethod.name}
+                            </span>
                           </div>
                         )}
                       </div>
 
                       {publisher && (
                         <div className="mt-4 border-t pt-4">
-                          <h3 className="text-lg font-semibold mb-3">དཔར་ཁང་ཞིབ་ཕྲ།</h3>
+                          <h3 className="text-lg font-semibold mb-3">
+                            དཔར་ཁང་ཞིབ་ཕྲ།
+                          </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2">
                               <span className="text-gray-600">མིང་།</span>
-                              <span className="font-medium">{publisher.name}</span>
+                              <span className="font-medium">
+                                {publisher.name}
+                              </span>
                             </div>
                             {publisher.location && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">ཆགས་ཡུལ།</span>
-                                <span className="font-medium">{publisher.location}</span>
+                                <span className="font-medium">
+                                  {publisher.location}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -308,7 +349,9 @@ const CitationForm = ({
 
                       {author && (
                         <div className="mt-4 border-t pt-4">
-                          <h3 className="text-lg font-semibold mb-3">རྩོམ་པ་པོའི་ཞིབ་ཕྲ།</h3>
+                          <h3 className="text-lg font-semibold mb-3">
+                            རྩོམ་པ་པོའི་ཞིབ་ཕྲ།
+                          </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2">
                               <span className="text-gray-600">མིང་།</span>
@@ -317,19 +360,25 @@ const CitationForm = ({
                             {author.year_of_birth !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">སྐྱེས་ལོ།</span>
-                                <span className="font-medium">{author.year_of_birth}</span>
+                                <span className="font-medium">
+                                  {author.year_of_birth}
+                                </span>
                               </div>
                             )}
                             {author.year_of_death !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">འདས་ལོ།</span>
-                                <span className="font-medium">{author.year_of_death}</span>
+                                <span className="font-medium">
+                                  {author.year_of_death}
+                                </span>
                               </div>
                             )}
                             {author.nationality && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">མི་རིགས།</span>
-                                <span className="font-medium">{author.nationality}</span>
+                                <span className="font-medium">
+                                  {author.nationality}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -338,28 +387,38 @@ const CitationForm = ({
 
                       {translator && (
                         <div className="mt-4 border-t pt-4">
-                          <h3 className="text-lg font-semibold mb-3">ལོ་ཙཱ་བ་ཞིབ་ཕྲ།</h3>
+                          <h3 className="text-lg font-semibold mb-3">
+                            ལོ་ཙཱ་བ་ཞིབ་ཕྲ།
+                          </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2">
                               <span className="text-gray-600">མིང་།</span>
-                              <span className="font-medium">{translator.name}</span>
+                              <span className="font-medium">
+                                {translator.name}
+                              </span>
                             </div>
                             {translator.year_of_birth !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">སྐྱེས་ལོ།</span>
-                                <span className="font-medium">{translator.year_of_birth}</span>
+                                <span className="font-medium">
+                                  {translator.year_of_birth}
+                                </span>
                               </div>
                             )}
                             {translator.year_of_death !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">འདས་ལོ།</span>
-                                <span className="font-medium">{translator.year_of_death}</span>
+                                <span className="font-medium">
+                                  {translator.year_of_death}
+                                </span>
                               </div>
                             )}
                             {translator.nationality && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">མི་རིགས།</span>
-                                <span className="font-medium">{translator.nationality}</span>
+                                <span className="font-medium">
+                                  {translator.nationality}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -376,19 +435,25 @@ const CitationForm = ({
                             {Editor.year_of_birth !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">སྐྱེས་ལོ།</span>
-                                <span className="font-medium">{Editor.year_of_birth}</span>
+                                <span className="font-medium">
+                                  {Editor.year_of_birth}
+                                </span>
                               </div>
                             )}
                             {Editor.year_of_death !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">འདས་ལོ།</span>
-                                <span className="font-medium">{Editor.year_of_death}</span>
+                                <span className="font-medium">
+                                  {Editor.year_of_death}
+                                </span>
                               </div>
                             )}
                             {Editor.nationality && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">མི་རིགས།</span>
-                                <span className="font-medium">{Editor.nationality}</span>
+                                <span className="font-medium">
+                                  {Editor.nationality}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -397,7 +462,9 @@ const CitationForm = ({
 
                       {Terton && (
                         <div className="mt-4 border-t pt-4">
-                          <h3 className="text-lg font-semibold mb-3">གཏེར་སྟོན་ཞིབ་ཕྲ།</h3>
+                          <h3 className="text-lg font-semibold mb-3">
+                            གཏེར་སྟོན་ཞིབ་ཕྲ།
+                          </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2">
                               <span className="text-gray-600">མིང་།</span>
@@ -406,19 +473,25 @@ const CitationForm = ({
                             {Terton.year_of_birth !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">སྐྱེས་ལོ།</span>
-                                <span className="font-medium">{Terton.year_of_birth}</span>
+                                <span className="font-medium">
+                                  {Terton.year_of_birth}
+                                </span>
                               </div>
                             )}
                             {Terton.year_of_death !== 0 && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">འདས་ལོ།</span>
-                                <span className="font-medium">{Terton.year_of_death}</span>
+                                <span className="font-medium">
+                                  {Terton.year_of_death}
+                                </span>
                               </div>
                             )}
                             {Terton.nationality && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-gray-600">མི་རིགས།</span>
-                                <span className="font-medium">{Terton.nationality}</span>
+                                <span className="font-medium">
+                                  {Terton.nationality}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -434,28 +507,34 @@ const CitationForm = ({
                     <div className="grid grid-cols-4 gap-4">
                       <div className="flex space-x-2 items-center">
                         <label className="shrink-0">པོད་ཕྲེང་།</label>
-                        <input 
+                        <input
                           className="w-full border-b border-black outline-none"
                           {...register(`citations.${index}.location.volume`)}
                         />
                       </div>
                       <div className="flex space-x-2 items-center">
                         <label className="shrink-0">ཤོག་གྲངས།</label>
-                        <input 
+                        <input
                           className="w-full border-b border-black outline-none"
-                          {...register(`citations.${index}.location.pageNumber`)}
+                          {...register(
+                            `citations.${index}.location.pageNumber`,
+                          )}
                         />
                       </div>
                       <div className="flex space-x-2 items-center">
                         <label className="shrink-0">ཐིག་ཕྲེང་།</label>
-                        <input 
+                        <input
                           className="w-full border-b border-black outline-none"
-                          {...register(`citations.${index}.location.lineNumber`)}
+                          {...register(
+                            `citations.${index}.location.lineNumber`,
+                          )}
                         />
                       </div>
                       <div>
-                        <label htmlFor="folio" className="shrink-0">ཐིག་ཕྲེང་།</label>
-                        <select 
+                        <label htmlFor="folio" className="shrink-0">
+                          ཐིག་ཕྲེང་།
+                        </label>
+                        <select
                           className="border-b w-24 border-black outline-none pb-2"
                           {...register(`citations.${index}.location.folio`)}
                         >
@@ -479,12 +558,17 @@ const CitationForm = ({
                       onClick={() => handleSaveCitation(index)}
                       className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:bg-gray-400"
                       disabled={
-                        !watch(`citations.${index}.bookId`) || 
+                        !watch(`citations.${index}.bookId`) ||
                         !watch(`citations.${index}.text`) ||
                         createCitationMutation.isPending
                       }
                     >
-                      {createCitationMutation.isPending ? 'Saving...' : citationIds[index] ? 'Update' : 'Save'} Citation
+                      {createCitationMutation.isPending
+                        ? "Saving..."
+                        : citationIds[index]
+                          ? "Update"
+                          : "Save"}{" "}
+                      Citation
                     </button>
                   </div>
                 </div>

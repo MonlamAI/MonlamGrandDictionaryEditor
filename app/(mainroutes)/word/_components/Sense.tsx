@@ -48,6 +48,7 @@ const Sense = ({
 }: SenseProps) => {
   const [citationIds, setCitationIds] = useState<string[]>([]);
   const [selectedParent, setSelectedParent] = useState<string>("");
+
   const mutation = useMutation({
     mutationFn: createSense,
     onSuccess: (data) => {
@@ -112,6 +113,7 @@ const Sense = ({
         registerId: String(data.registerId),
         wordId: wordId,
         domainIds: data.domainIds,
+        citationIds: citationIds,
       };
 
       console.log("Submitted Sense Data:", formattedData);
@@ -329,5 +331,4 @@ const Sense = ({
     </ReactPortal>
   );
 };
-
 export default Sense;
