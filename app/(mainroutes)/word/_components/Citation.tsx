@@ -118,13 +118,6 @@ const CitationForm = ({
         setCitationIds(newCitationIds);
         onCitationsChange(newCitationIds);
       }
-    },
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data?.detail || "Citation creation failed");
-      } else {
-        console.error("An unexpected error occurred");
-      }
     }
   });
 

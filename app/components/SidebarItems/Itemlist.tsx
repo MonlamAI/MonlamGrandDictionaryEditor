@@ -30,11 +30,10 @@ export interface ItemlistProps {
 
 const PAGE_SIZE = 20;
 
-const Itemlist: React.FC<ItemlistProps> = ({ searchQuery }) => {
+const Itemlist=({ searchQuery }:ItemlistProps) => {
   const [debouncedSearch] = useDebounce(searchQuery, 300);
   const { ref, inView } = useInView();
 
-  // Only use infinite query for fetching all data
   const {
     data: infiniteData,
     fetchNextPage,

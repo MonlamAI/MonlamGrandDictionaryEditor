@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Breadcrumb from "@/app/components/Card/BreadCrumb";
 import Status from "@/app/components/Status";
-import { FaPlus, FaEdit } from "@/app/utils/Icon";
+import { FaPlus } from "@/app/utils/Icon";
 import WordForm from "./wordForm";
 import Sense from "./Sense";
 import SenseCard from "./SenseCard";
@@ -32,7 +32,7 @@ export default function WordClient({domaindata,bookData, originData, posData, re
 
   const handleWordSubmitSuccess = (id: number) => {
     setWordId(id);
-    console.log('Word ID set in client:', id); // Log the word ID when it's set
+    console.log('Word ID set in client:', id); 
   };
 
   return (
@@ -71,7 +71,7 @@ export default function WordClient({domaindata,bookData, originData, posData, re
           registerData={registerData}
           initialData={editingSense}
           bookData={bookData}
-          wordId={wordId} // Pass the wordId to Sense component
+          wordId={wordId}
           Authordata={Authordata}
           Editordata={Editordata}
           Tertondata={Tertondata}
