@@ -1,16 +1,18 @@
 import { SenseSchema } from '@/app/schemas/Schema';
 import ReactPortal from '@/app/Wrapper/ReactPortal';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { RxCross2 } from '@/app/utils/Icon';
 import { z } from 'zod';
 import CitationForm from './Citation';
+import { classifyDomains } from '@/app/utils/util';
 
 export type InputSense = z.infer<typeof SenseSchema>;
 
 interface SenseProps {
   onClose: () => void;
+  domaindata: any;
   posData: any;
   registerData: any;
   nameEntityData: any;
@@ -24,7 +26,6 @@ interface SenseProps {
   Translatordata: any;
   PublisherData: any;
   printmethoddata: any;
-  domaindata:any
 }
 
 const Sense = ({
@@ -44,12 +45,14 @@ const Sense = ({
   PublisherData,
   printmethoddata
 }: SenseProps) => {
-  const [citationIds, setCitationIds] = React.useState<string[]>([]);
-
+  const [citationIds, setCitationIds] = useState<string[]>([]);
+  const [selectedParent, setSelectedParent] = useState<string>('');
+  
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<InputSense>({
     resolver: zodResolver(SenseSchema),
@@ -88,6 +91,8 @@ const Sense = ({
   const handleCitationsChange = (newCitationIds: string[]) => {
     setCitationIds(newCitationIds);
   };
+  const parents = domaindata.filter((domain: any) => domain.parent_id === null);
+  const children = domaindata.filter((domain: any) => domain.parent_id !== null);
 
   return (
     <ReactPortal wrapperId="sense-wrapper">
@@ -162,13 +167,62 @@ const Sense = ({
                 </div>
               </div>
 
-              <div className="flex-1">
-                <select
-                  className="w-full border-b border-black outline-none pb-2"
-                  {...register("domainIds")}
-                >
-                  <option value="">བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</option>
-                </select>
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <Controller
+                    name="domainIds"
+                    control={control}
+                    render={({ field }) => (
+                      <div className='flex items-center space-x-2'>
+                      <label> བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
+                      <select
+                        className="w-full border-b border-black outline-none pb-2"
+                        onChange={(e) => {
+                          setSelectedParent(e.target.value);
+                          field.onChange([e.target.value]);
+                        }}
+                        value={selectedParent}
+                      >
+                        {parents.map((parent: any) => (
+                          <option key={parent.id} value={parent.id}>
+                            {parent.text}
+                          </option>
+                        ))}
+                      </select>
+                      </div>
+                    )}
+                  />
+                </div>
+                {selectedParent && children.some((child: any) => child.parent_id === selectedParent) && (
+                  <div className="flex-1">
+                    <Controller
+                      name="domainIds"
+                      control={control}
+                      render={({ field }) => (
+                        <div className='flex items-center space-x-2'>
+                        <label> བྱིས་པའི་ཁྱབ་ཁོངས་འདེམས།</label>
+                        <select
+                          className="w-full border-b border-black outline-none pb-2"
+                          onChange={(e) => {
+                            const newValue = [...field.value, e.target.value];
+                            field.onChange(newValue);
+                          }}
+                        >
+                          
+                          {children
+                            .filter((child: any) => child.parent_id === selectedParent)
+                            .map((child: any) => (
+                              <option key={child.id} value={child.id}>
+                                {child.text}
+                              </option>
+                            ))}
+                        </select>
+                        </div>
+                      )}
+                    />
+                    
+                  </div>
+                )}
               </div>
 
               <div className="flex space-x-4">
@@ -200,10 +254,6 @@ const Sense = ({
                 </div>
               </div>
 
-              <div className="border-t pt-4">
-                
-              </div>
-
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -215,15 +265,15 @@ const Sense = ({
               </div>
             </form>
             <CitationForm
-                  bookData={bookData}
-                  authorData={Authordata}
-                  Editordata={Editordata}
-                  Tertondata={Tertondata}
-                  Translatordata={Translatordata}
-                  PublisherData={PublisherData}
-                  printmethoddata={printmethoddata}
-                  onCitationsChange={handleCitationsChange}
-                />
+              bookData={bookData}
+              authorData={Authordata}
+              Editordata={Editordata}
+              Tertondata={Tertondata}
+              Translatordata={Translatordata}
+              PublisherData={PublisherData}
+              printmethoddata={printmethoddata}
+              onCitationsChange={handleCitationsChange}
+            />
           </div>
         </div>
       </div>
