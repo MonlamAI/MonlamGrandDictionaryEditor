@@ -1,19 +1,24 @@
-'use server'
+"use server";
 
-import { z } from "zod"
-import { bookSchema, CitationSchema, personSchema, PublisherSchema, SenseSchema, WordSchema } from "../schemas/Schema"
-import axios from "axios"
-import { cleanData, typeMap } from "../utils/util"
-
-
+import { z } from "zod";
+import {
+  bookSchema,
+  CitationSchema,
+  personSchema,
+  PublisherSchema,
+  SenseSchema,
+  WordSchema,
+} from "../schemas/Schema";
+import axios from "axios";
+import { cleanData, typeMap } from "../utils/util";
 
 export async function createPerson(data: z.infer<typeof personSchema>) {
   try {
-    const { type, ...dataToSend } = data
-    const pathnav = typeMap[type]
-    
+    const { type, ...dataToSend } = data;
+    const pathnav = typeMap[type];
+
     if (!pathnav) {
-      throw new Error("Invalid type selected")
+      throw new Error("Invalid type selected");
     }
 
     const response = await axios.post(
@@ -25,42 +30,42 @@ export async function createPerson(data: z.infer<typeof personSchema>) {
           accept: "application/json",
           "Content-Type": "application/json",
         },
-      }
-    )
-    return { success: true, data: response.data }
+      },
+    );
+    return { success: true, data: response.data };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.detail || "Form submission failed")
+      throw new Error(error.response?.data?.detail || "Form submission failed");
     }
-    throw new Error("An unexpected error occurred")
+    throw new Error("An unexpected error occurred");
   }
 }
 
 export async function createPublisher(data: z.infer<typeof PublisherSchema>) {
-    try {
-      const response = await axios.post(
-        "https://api.monlamdictionary.com/api/grand/book/publisher/create",
-        data,
-        {
-          headers: {
-            apikey: process.env.API_KEY,
-            accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      return { success: true, data: response.data }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.detail || "Form submission failed")
-      }
-      throw new Error("An unexpected error occurred")
+  try {
+    const response = await axios.post(
+      "https://api.monlamdictionary.com/api/grand/book/publisher/create",
+      data,
+      {
+        headers: {
+          apikey: process.env.API_KEY,
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || "Form submission failed");
     }
+    throw new Error("An unexpected error occurred");
+  }
 }
 
 export async function createBook(data: z.infer<typeof bookSchema>) {
-  const cleandata=cleanData(data)
-  console.log(cleandata)
+  const cleandata = cleanData(data);
+  console.log(cleandata);
   try {
     const response = await axios.post(
       "https://api.monlamdictionary.com/api/grand/metadata/book/create",
@@ -71,21 +76,54 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
           accept: "application/json",
           "Content-Type": "application/json",
         },
-      }
-    )
-    return { success: true, data: response.data }
+      },
+    );
+    return { success: true, data: response.data };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.detail || "Form submission failed")
+      throw new Error(error.response?.data?.detail || "Form submission failed");
     }
-    throw new Error("An unexpected error occurred")
+    throw new Error("An unexpected error occurred");
   }
 }
 
 export async function createSense(data: z.infer<typeof SenseSchema>) {
-  console.log(data)
+  try {
+    const response = await axios.post(
+      "https://api.monlamdictionary.com/api/grand/sense/create",
+      data,
+      {
+        headers: {
+          apikey: process.env.API_KEY,
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || "Form submission failed");
+    }
+    throw new Error("An unexpected error occurred");
+  }
 }
-
+export const editSense = async (
+  data: z.infer<typeof SenseSchema> & { id: string },
+) => {
+  const response = await axios.put(
+    `https://api.monlamdictionary.com/api/grand/sense/edit/${data.id}`,
+    data,
+    {
+      headers: {
+        apikey: process.env.API_KEY,
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  return response.data;
+};
 export async function createWord(data: z.infer<typeof WordSchema>) {
   try {
     const response = await axios.post(
@@ -97,18 +135,18 @@ export async function createWord(data: z.infer<typeof WordSchema>) {
           accept: "application/json",
           "Content-Type": "application/json",
         },
-      }
-    )
-    return { success: true, data: response.data }
+      },
+    );
+    return { success: true, data: response.data };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.detail || "Form submission failed")
+      throw new Error(error.response?.data?.detail || "Form submission failed");
     }
-    throw new Error("An unexpected error occurred")
+    throw new Error("An unexpected error occurred");
   }
 }
 
-export async function createCitation(data:z.infer<typeof CitationSchema>){
+export async function createCitation(data: z.infer<typeof CitationSchema>) {
   try {
     const response = await axios.post(
       "https://api.monlamdictionary.com/api/grand/metadata/citation/create",
@@ -119,13 +157,13 @@ export async function createCitation(data:z.infer<typeof CitationSchema>){
           accept: "application/json",
           "Content-Type": "application/json",
         },
-      }
-    )
-    return { success: true, data: response.data }
+      },
+    );
+    return { success: true, data: response.data };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.detail || "Form submission failed")
+      throw new Error(error.response?.data?.detail || "Form submission failed");
     }
-    throw new Error("An unexpected error occurred")
+    throw new Error("An unexpected error occurred");
   }
 }

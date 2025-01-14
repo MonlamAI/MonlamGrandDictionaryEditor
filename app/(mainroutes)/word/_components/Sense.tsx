@@ -6,6 +6,8 @@ import { useForm, Controller } from "react-hook-form";
 import { RxCross2 } from "@/app/utils/Icon";
 import { z } from "zod";
 import CitationForm from "./Citation";
+import { useMutation } from "@tanstack/react-query";
+import { createSense } from "@/app/actions/PostActions";
 
 export type InputSense = z.infer<typeof SenseSchema>;
 
@@ -46,6 +48,19 @@ const Sense = ({
 }: SenseProps) => {
   const [citationIds, setCitationIds] = useState<string[]>([]);
   const [selectedParent, setSelectedParent] = useState<string>("");
+  const mutation = useMutation({
+    mutationFn: createSense,
+    onSuccess: (data) => {
+      console.log("Success:", data);
+      onSubmit(data);
+      reset();
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Error submitting form:", error);
+      // Handle error (e.g., show error message to user)
+    },
+  });
 
   const {
     register,
@@ -67,21 +82,43 @@ const Sense = ({
     },
   });
 
+  // const handleFormSubmit = async (data: InputSense) => {
+  //   try {
+  //     const formattedData = {
+  //       ...data,
+  //       id: initialData?.id || Date.now(),
+  //       posId: String(data.posId),
+  //       name_entityId: String(data.name_entityId),
+  //       registerId: String(data.registerId),
+  //       wordId: wordId,
+  //       citationIds: citationIds,
+  //     };
+
+  //     onSubmit(formattedData);
+  //     reset();
+  //     onClose();
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //   }
+  // };
   const handleFormSubmit = async (data: InputSense) => {
     try {
       const formattedData = {
-        ...data,
-        id: initialData?.id || Date.now(),
+        description: data.description,
+        has_illustration: data.has_illustration,
+        example_sentence: data.example_sentence,
         posId: String(data.posId),
         name_entityId: String(data.name_entityId),
         registerId: String(data.registerId),
         wordId: wordId,
-        citationIds: citationIds,
+        domainIds: data.domainIds,
       };
 
-      onSubmit(formattedData);
-      reset();
-      onClose();
+      console.log("Submitted Sense Data:", formattedData);
+      mutation.mutate(formattedData);
+      // onSubmit(formattedData);
+      // reset();
+      // onClose();
     } catch (error) {
       console.error("Error submitting form:", error);
     }

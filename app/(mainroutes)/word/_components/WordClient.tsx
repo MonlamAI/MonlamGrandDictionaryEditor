@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import Breadcrumb from "@/app/components/Card/BreadCrumb";
 import Status from "@/app/components/Status";
@@ -7,23 +7,39 @@ import WordForm from "./wordForm";
 import Sense from "./Sense";
 import SenseCard from "./SenseCard";
 
-export default function WordClient({domaindata,bookData, originData, posData, registerData, nameEntityData,Authordata,Editordata,Tertondata,Translatordata,PublisherData,printmethoddata }: any) {
+export default function WordClient({
+  domaindata,
+  bookData,
+  originData,
+  posData,
+  registerData,
+  nameEntityData,
+  Authordata,
+  Editordata,
+  Tertondata,
+  Translatordata,
+  PublisherData,
+  printmethoddata,
+}: any) {
   const [isSenseOpen, setisSenseOpen] = useState(false);
-  const [senses, setSenses] = useState<any[]>([]);
   const [editingSense, setEditingSense] = useState<any>(null);
   const [wordId, setWordId] = useState<number | null>(null);
+  const [senses, setSenses] = useState<any[]>([]);
 
   const handleAddSense = (senseData: any) => {
-    if (editingSense) {
-      setSenses(senses.map(sense => 
-        sense.id === editingSense.id ? { ...senseData, id: editingSense.id } : sense
-      ));
-      setEditingSense(null);
-    } else {
-      setSenses([...senses, { ...senseData, id: Date.now() }]);
-    }
-    setisSenseOpen(false);
+    setSenses((prevSenses) => [...prevSenses, senseData]);
   };
+  // const handleAddSense = (senseData: any) => {
+  //   if (editingSense) {
+  //     setSenses(senses.map(sense =>
+  //       sense.id === editingSense.id ? { ...senseData, id: editingSense.id } : sense
+  //     ));
+  //     setEditingSense(null);
+  //   } else {
+  //     setSenses([...senses, { ...senseData, id: Date.now() }]);
+  //   }
+  //   setisSenseOpen(false);
+  // };
 
   const handleEditSense = (sense: any) => {
     setEditingSense(sense);
@@ -32,7 +48,7 @@ export default function WordClient({domaindata,bookData, originData, posData, re
 
   const handleWordSubmitSuccess = (id: number) => {
     setWordId(id);
-    console.log('Word ID set in client:', id); 
+    console.log("Word ID set in client:", id);
   };
 
   return (
@@ -46,7 +62,7 @@ export default function WordClient({domaindata,bookData, originData, posData, re
 
       <button
         className={`flex text-sm p-2 justify-center items-center mt-8 w-fit rounded-md bg-surface-light border space-x-2 transition-all duration-150 ${
-          wordId ? 'hover:opacity-80' : 'opacity-50 cursor-not-allowed'
+          wordId ? "hover:opacity-80" : "opacity-50 cursor-not-allowed"
         }`}
         onClick={() => {
           if (wordId) {
@@ -83,7 +99,11 @@ export default function WordClient({domaindata,bookData, originData, posData, re
 
       <div className="mt-8 space-y-4">
         {senses.map((sense) => (
-          <SenseCard sense={sense} key={sense.id} handleEditSense={handleEditSense} />
+          <SenseCard
+            sense={sense}
+            key={sense.id}
+            handleEditSense={handleEditSense}
+          />
         ))}
       </div>
     </>
