@@ -1,12 +1,11 @@
-import { SenseSchema } from '@/app/schemas/Schema';
-import ReactPortal from '@/app/Wrapper/ReactPortal';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { RxCross2 } from '@/app/utils/Icon';
-import { z } from 'zod';
-import CitationForm from './Citation';
-import { classifyDomains } from '@/app/utils/util';
+import { SenseSchema } from "@/app/schemas/Schema";
+import ReactPortal from "@/app/Wrapper/ReactPortal";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { RxCross2 } from "@/app/utils/Icon";
+import { z } from "zod";
+import CitationForm from "./Citation";
 
 export type InputSense = z.infer<typeof SenseSchema>;
 
@@ -43,11 +42,11 @@ const Sense = ({
   Tertondata,
   Translatordata,
   PublisherData,
-  printmethoddata
+  printmethoddata,
 }: SenseProps) => {
   const [citationIds, setCitationIds] = useState<string[]>([]);
-  const [selectedParent, setSelectedParent] = useState<string>('');
-  
+  const [selectedParent, setSelectedParent] = useState<string>("");
+
   const {
     register,
     handleSubmit,
@@ -58,12 +57,12 @@ const Sense = ({
     resolver: zodResolver(SenseSchema),
     mode: "onChange",
     defaultValues: initialData || {
-      description: '',
+      description: "",
       has_illustration: false,
-      example_sentence: '',
-      posId: posData[0]?.id || '',
-      name_entityId: nameEntityData[0]?.id || '',
-      registerId: registerData[0]?.id || '',
+      example_sentence: "",
+      posId: posData[0]?.id || "",
+      name_entityId: nameEntityData[0]?.id || "",
+      registerId: registerData[0]?.id || "",
       domainIds: [],
     },
   });
@@ -77,14 +76,14 @@ const Sense = ({
         name_entityId: String(data.name_entityId),
         registerId: String(data.registerId),
         wordId: wordId,
-        citationIds: citationIds
+        citationIds: citationIds,
       };
-      
+
       onSubmit(formattedData);
       reset();
       onClose();
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -92,7 +91,9 @@ const Sense = ({
     setCitationIds(newCitationIds);
   };
   const parents = domaindata.filter((domain: any) => domain.parent_id === null);
-  const children = domaindata.filter((domain: any) => domain.parent_id !== null);
+  const children = domaindata.filter(
+    (domain: any) => domain.parent_id !== null,
+  );
 
   return (
     <ReactPortal wrapperId="sense-wrapper">
@@ -110,7 +111,11 @@ const Sense = ({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(handleFormSubmit)} className="mt-6 space-y-6" autoComplete="off">
+            <form
+              onSubmit={handleSubmit(handleFormSubmit)}
+              className="mt-6 space-y-6"
+              autoComplete="off"
+            >
               <div className="space-y-4">
                 <div className="flex items-center">
                   <label className="w-24">འགྲེལ་བ།</label>
@@ -173,56 +178,63 @@ const Sense = ({
                     name="domainIds"
                     control={control}
                     render={({ field }) => (
-                      <div className='flex items-center space-x-2'>
-                      <label> བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
-                      <select
-                        className="w-full border-b border-black outline-none pb-2"
-                        onChange={(e) => {
-                          setSelectedParent(e.target.value);
-                          field.onChange([e.target.value]);
-                        }}
-                        value={selectedParent}
-                      >
-                        {parents.map((parent: any) => (
-                          <option key={parent.id} value={parent.id}>
-                            {parent.text}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="flex items-center space-x-2">
+                        <label> བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
+                        <select
+                          className="w-full border-b border-black outline-none pb-2"
+                          onChange={(e) => {
+                            setSelectedParent(e.target.value);
+                            field.onChange([e.target.value]);
+                          }}
+                          value={selectedParent}
+                        >
+                          {parents.map((parent: any) => (
+                            <option key={parent.id} value={parent.id}>
+                              {parent.text}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     )}
                   />
                 </div>
-                {selectedParent && children.some((child: any) => child.parent_id === selectedParent) && (
-                  <div className="flex-1">
-                    <Controller
-                      name="domainIds"
-                      control={control}
-                      render={({ field }) => (
-                        <div className='flex items-center space-x-2'>
-                        <label> བྱིས་པའི་ཁྱབ་ཁོངས་འདེམས།</label>
-                        <select
-                          className="w-full border-b border-black outline-none pb-2"
-                          onChange={(e) => {
-                            const newValue = [...field.value, e.target.value];
-                            field.onChange(newValue);
-                          }}
-                        >
-                          
-                          {children
-                            .filter((child: any) => child.parent_id === selectedParent)
-                            .map((child: any) => (
-                              <option key={child.id} value={child.id}>
-                                {child.text}
-                              </option>
-                            ))}
-                        </select>
-                        </div>
-                      )}
-                    />
-                    
-                  </div>
-                )}
+                {selectedParent &&
+                  children.some(
+                    (child: any) => child.parent_id === selectedParent,
+                  ) && (
+                    <div className="flex-1">
+                      <Controller
+                        name="domainIds"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <label> བྱིས་པའི་ཁྱབ་ཁོངས་འདེམས།</label>
+                            <select
+                              className="w-full border-b border-black outline-none pb-2"
+                              onChange={(e) => {
+                                const newValue = [
+                                  ...field.value,
+                                  e.target.value,
+                                ];
+                                field.onChange(newValue);
+                              }}
+                            >
+                              {children
+                                .filter(
+                                  (child: any) =>
+                                    child.parent_id === selectedParent,
+                                )
+                                .map((child: any) => (
+                                  <option key={child.id} value={child.id}>
+                                    {child.text}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        )}
+                      />
+                    </div>
+                  )}
               </div>
 
               <div className="flex space-x-4">
@@ -260,7 +272,7 @@ const Sense = ({
                   className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-600"
                   disabled={isSubmitting}
                 >
-                  {initialData ? 'ཞུ་དག' : 'ཉར་ཚགས།'}
+                  {initialData ? "ཞུ་དག" : "ཉར་ཚགས།"}
                 </button>
               </div>
             </form>
