@@ -2,10 +2,9 @@
 import React, { useState } from "react";
 import Breadcrumb from "@/app/components/Card/BreadCrumb";
 import Status from "@/app/components/Status";
-import { FaPlus } from "@/app/utils/Icon";
+import { FaEdit, FaPlus } from "@/app/utils/Icon";
 import WordForm from "./wordForm";
 import Sense from "./Sense";
-import SenseCard from "./SenseCard";
 
 export default function WordClient({
   domaindata,
@@ -26,31 +25,42 @@ export default function WordClient({
   const [wordId, setWordId] = useState<number | null>(null);
   const [senses, setSenses] = useState<any[]>([]);
 
+  console.log("this is the sensedata we get from the server", senses);
   const handleAddSense = (senseData: any) => {
-    setSenses((prevSenses) => [...prevSenses, senseData]);
+    if (editingSense) {
+      // Update existing sense
+      setSenses((prevSenses) =>
+        prevSenses.map((sense) =>
+          sense.id === editingSense.id ? senseData : sense,
+        ),
+      );
+      setEditingSense(null);
+    } else {
+      // Add new sense
+      setSenses((prevSenses) => [...prevSenses, senseData]);
+    }
+    setisSenseOpen(false);
   };
-  // const handleAddSense = (senseData: any) => {
-  //   if (editingSense) {
-  //     setSenses(senses.map(sense =>
-  //       sense.id === editingSense.id ? { ...senseData, id: editingSense.id } : sense
-  //     ));
-  //     setEditingSense(null);
-  //   } else {
-  //     setSenses([...senses, { ...senseData, id: Date.now() }]);
-  //   }
-  //   setisSenseOpen(false);
-  // };
 
   const handleEditSense = (sense: any) => {
-    setEditingSense(sense);
+    const transformedSense = {
+      ...sense,
+      citationIds: sense.citation
+        ? sense.citation.map((cit: any) => cit.id)
+        : [],
+    };
+    console.log("Editing sense with data:", transformedSense);
+    setEditingSense(transformedSense);
     setisSenseOpen(true);
   };
-
   const handleWordSubmitSuccess = (id: number) => {
     setWordId(id);
     console.log("Word ID set in client:", id);
   };
-
+  const getPosName = (posId: string) => {
+    const pos = posData.find((pos: any) => pos.id === posId);
+    return pos ? pos.type : "";
+  };
   return (
     <>
       <Breadcrumb name="ཚིག་གསར།" />
@@ -79,7 +89,10 @@ export default function WordClient({
 
       {isSenseOpen && (
         <Sense
-          onClose={() => setisSenseOpen(false)}
+          onClose={() => {
+            setisSenseOpen(false);
+            setEditingSense(null);
+          }}
           onSubmit={handleAddSense}
           domaindata={domaindata}
           nameEntityData={nameEntityData}
@@ -98,12 +111,32 @@ export default function WordClient({
       )}
 
       <div className="mt-8 space-y-4">
-        {senses.map((sense) => (
-          <SenseCard
-            sense={sense}
+        {senses.map((sense, i) => (
+          <div
             key={sense.id}
-            handleEditSense={handleEditSense}
-          />
+            className=" border-b border-black w-3/5 rounded-sm shadow-sm  p-2 bg-primary-50 font-monlam cursor-pointer"
+            onClick={() => handleEditSense(sense)}
+          >
+            <div className="flex justify-between items-start">
+              <div className="flex items-center font-monlam gap-x-2">
+                <p className=" text-gray-600 text-sm">འགྲེལ་བ། {i + 1}</p>{" "}
+                <h3 className="text-lg font-medium "> {sense.description}</h3>
+              </div>
+
+              <div>
+                {sense.posId && (
+                  <p className=" py-2 px-4 text-sm rounded-xl border border-black">
+                    {getPosName(sense.posId)}
+                  </p>
+                )}
+              </div>
+            </div>
+            {sense.citation && sense.citation.length > 0 && (
+              <p className="text-sm text-gray-600 mt-2">
+                མཆན་གྲངས། {sense.citation.length}
+              </p>
+            )}
+          </div>
         ))}
       </div>
     </>

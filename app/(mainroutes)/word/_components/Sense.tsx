@@ -7,7 +7,7 @@ import { RxCross2 } from "@/app/utils/Icon";
 import { z } from "zod";
 import CitationForm from "./Citation";
 import { useMutation } from "@tanstack/react-query";
-import { createSense } from "@/app/actions/PostActions";
+import { createSense, editSense } from "@/app/actions/PostActions";
 
 export type InputSense = z.infer<typeof SenseSchema>;
 
@@ -18,7 +18,7 @@ interface SenseProps {
   registerData: any;
   nameEntityData: any;
   onSubmit: (data: InputSense) => void;
-  initialData?: InputSense;
+  initialData?: InputSense & { id?: string; citation?: any[] };
   wordId: any;
   bookData: any;
   Authordata: any;
@@ -46,20 +46,44 @@ const Sense = ({
   PublisherData,
   printmethoddata,
 }: SenseProps) => {
-  const [citationIds, setCitationIds] = useState<string[]>([]);
-  const [selectedParent, setSelectedParent] = useState<string>("");
+  const [citationIds, setCitationIds] = useState<string[]>(
+    initialData?.citation?.map((cit) => cit.id) || [],
+  );
+  const [selectedParent, setSelectedParent] = useState<string>(
+    initialData?.domainIds?.[0] || "",
+  );
 
   const mutation = useMutation({
-    mutationFn: createSense,
-    onSuccess: (data) => {
-      console.log("Success:", data);
+    mutationFn: async (data: InputSense) => {
+      if (initialData?.id) {
+        return editSense({
+          ...data,
+          id: initialData.id,
+          connect_citation_ids: citationIds,
+          disconnect_citation_ids:
+            initialData.citation
+              ?.map((cit) => cit.id)
+              .filter((id) => !citationIds.includes(id)) || [],
+          connect_domain_ids: data.domainIds,
+          disconnect_domain_ids:
+            initialData.domainIds?.filter(
+              (id: string) => !data.domainIds.includes(id),
+            ) || [],
+        });
+      } else {
+        return createSense({ ...data, citationIds });
+      }
+    },
+    onSuccess: (response) => {
+      console.log("Success sensecreted:", response);
+      // Check if the response has a data property (from createSense)
+      const data = "data" in response ? response.data : response;
       onSubmit(data);
       reset();
       onClose();
     },
     onError: (error) => {
       console.error("Error submitting form:", error);
-      // Handle error (e.g., show error message to user)
     },
   });
 
@@ -83,25 +107,6 @@ const Sense = ({
     },
   });
 
-  // const handleFormSubmit = async (data: InputSense) => {
-  //   try {
-  //     const formattedData = {
-  //       ...data,
-  //       id: initialData?.id || Date.now(),
-  //       posId: String(data.posId),
-  //       name_entityId: String(data.name_entityId),
-  //       registerId: String(data.registerId),
-  //       wordId: wordId,
-  //       citationIds: citationIds,
-  //     };
-
-  //     onSubmit(formattedData);
-  //     reset();
-  //     onClose();
-  //   } catch (error) {
-  //     console.error("Error submitting form:", error);
-  //   }
-  // };
   const handleFormSubmit = async (data: InputSense) => {
     try {
       const formattedData = {
@@ -116,19 +121,18 @@ const Sense = ({
         citationIds: citationIds,
       };
 
-      console.log("Submitted Sense Data:", formattedData);
+      console.log("Submitting Sense Data tanstack:", formattedData);
       mutation.mutate(formattedData);
-      // onSubmit(formattedData);
-      // reset();
-      // onClose();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
 
   const handleCitationsChange = (newCitationIds: string[]) => {
+    console.log("Citation IDs changed:", newCitationIds);
     setCitationIds(newCitationIds);
   };
+
   const parents = domaindata.filter((domain: any) => domain.parent_id === null);
   const children = domaindata.filter(
     (domain: any) => domain.parent_id !== null,
@@ -218,7 +222,7 @@ const Sense = ({
                     control={control}
                     render={({ field }) => (
                       <div className="flex items-center space-x-2">
-                        <label> བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
+                        <label>བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
                         <select
                           className="w-full border-b border-black outline-none pb-2"
                           onChange={(e) => {
@@ -247,7 +251,7 @@ const Sense = ({
                         control={control}
                         render={({ field }) => (
                           <div className="flex items-center space-x-2">
-                            <label> བྱིས་པའི་ཁྱབ་ཁོངས་འདེམས།</label>
+                            <label>བྱིས་པའི་ཁྱབ་ཁོངས་འདེམས།</label>
                             <select
                               className="w-full border-b border-black outline-none pb-2"
                               onChange={(e) => {
@@ -324,6 +328,7 @@ const Sense = ({
               PublisherData={PublisherData}
               printmethoddata={printmethoddata}
               onCitationsChange={handleCitationsChange}
+              initialCitations={initialData?.citation}
             />
           </div>
         </div>
@@ -331,4 +336,5 @@ const Sense = ({
     </ReactPortal>
   );
 };
+
 export default Sense;

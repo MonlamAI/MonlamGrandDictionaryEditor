@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { FaAngleDown, FaAngleUp } from "@/app/utils/Icon";
@@ -80,6 +80,7 @@ interface CitationFormProps {
   PublisherData?: Publisher[];
   printmethoddata?: PrintMethod[];
   onCitationsChange: (citationIds: string[]) => void;
+  initialCitations?: any[];
 }
 
 const CitationForm = ({
@@ -91,10 +92,21 @@ const CitationForm = ({
   PublisherData = [],
   printmethoddata = [],
   onCitationsChange,
+  initialCitations = [],
 }: CitationFormProps) => {
   const { control, register, watch } = useForm<FormData>({
     defaultValues: {
-      citations: [],
+      citations:
+        initialCitations.map((citation) => ({
+          text: citation.text,
+          bookId: citation.bookId,
+          location: {
+            volume: citation.location?.volume || "",
+            pageNumber: citation.location?.pageNumber || "",
+            lineNumber: citation.location?.lineNumber || "",
+            folio: citation.location?.folio || "",
+          },
+        })) || [],
     },
   });
 
@@ -103,8 +115,12 @@ const CitationForm = ({
     name: "citations",
   });
 
-  const [openStates, setOpenStates] = React.useState<boolean[]>([]);
-  const [citationIds, setCitationIds] = React.useState<string[]>([]);
+  const [openStates, setOpenStates] = React.useState<boolean[]>(
+    new Array(initialCitations.length).fill(true),
+  );
+  const [citationIds, setCitationIds] = React.useState<string[]>(
+    initialCitations.map((citation) => citation.id) || [],
+  );
   const handleAddCitation = () => {
     append({
       text: "",
@@ -194,6 +210,11 @@ const CitationForm = ({
   const findprintmethodById = (id: string): PrintMethod | undefined => {
     return printmethoddata.find((data) => data.id === id);
   };
+  useEffect(() => {
+    if (initialCitations.length > 0) {
+      onCitationsChange(initialCitations.map((citation) => citation.id));
+    }
+  }, []);
 
   return (
     <div className="space-y-4">
