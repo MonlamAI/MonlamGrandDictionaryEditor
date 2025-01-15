@@ -24,11 +24,10 @@ export default function WordClient({
   const [editingSense, setEditingSense] = useState<any>(null);
   const [wordId, setWordId] = useState<number | null>(null);
   const [senses, setSenses] = useState<any[]>([]);
+  const [isWordSubmitted, setIsWordSubmitted] = useState(false);
 
-  console.log("this is the sensedata we get from the server", senses);
   const handleAddSense = (senseData: any) => {
     if (editingSense) {
-      // Update existing sense
       setSenses((prevSenses) =>
         prevSenses.map((sense) =>
           sense.id === editingSense.id ? senseData : sense,
@@ -36,7 +35,6 @@ export default function WordClient({
       );
       setEditingSense(null);
     } else {
-      // Add new sense
       setSenses((prevSenses) => [...prevSenses, senseData]);
     }
     setisSenseOpen(false);
@@ -49,18 +47,20 @@ export default function WordClient({
         ? sense.citation.map((cit: any) => cit.id)
         : [],
     };
-    console.log("Editing sense with data:", transformedSense);
     setEditingSense(transformedSense);
     setisSenseOpen(true);
   };
+
   const handleWordSubmitSuccess = (id: number) => {
     setWordId(id);
-    console.log("Word ID set in client:", id);
+    setIsWordSubmitted(true);
   };
+
   const getPosName = (posId: string) => {
     const pos = posData.find((pos: any) => pos.id === posId);
     return pos ? pos.type : "";
   };
+
   return (
     <>
       <Breadcrumb name="ཚིག་གསར།" />
@@ -68,7 +68,11 @@ export default function WordClient({
         <Status statustype="pending" />
       </div>
 
-      <WordForm data={originData} onSubmitSuccess={handleWordSubmitSuccess} />
+      <WordForm
+        data={originData}
+        onSubmitSuccess={handleWordSubmitSuccess}
+        isSubmitted={isWordSubmitted}
+      />
 
       <button
         className={`flex text-sm p-2 justify-center items-center mt-8 w-fit rounded-md bg-surface-light border space-x-2 transition-all duration-150 ${
@@ -114,18 +118,18 @@ export default function WordClient({
         {senses.map((sense, i) => (
           <div
             key={sense.id}
-            className=" border-b border-black w-3/5 rounded-sm shadow-sm  p-2 bg-primary-50 font-monlam cursor-pointer"
+            className="border-b border-black w-3/5 rounded-sm shadow-sm p-2 bg-primary-50 font-monlam cursor-pointer"
             onClick={() => handleEditSense(sense)}
           >
             <div className="flex justify-between items-start">
               <div className="flex items-center font-monlam gap-x-2">
-                <p className=" text-gray-600 text-sm">འགྲེལ་བ། {i + 1}</p>{" "}
-                <h3 className="text-lg font-medium "> {sense.description}</h3>
+                <p className="text-gray-600 text-sm">འགྲེལ་བ། {i + 1}</p>
+                <h3 className="text-lg font-medium">{sense.description}</h3>
               </div>
 
               <div>
                 {sense.posId && (
-                  <p className=" py-2 px-4 text-sm rounded-xl border border-black">
+                  <p className="py-2 px-4 text-sm rounded-xl border border-black">
                     {getPosName(sense.posId)}
                   </p>
                 )}

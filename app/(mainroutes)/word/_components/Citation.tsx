@@ -448,6 +448,9 @@ const CitationForm = ({
 
                       {Editor && (
                         <div className="mt-4 border-t pt-4">
+                          <h3 className="text-lg font-semibold mb-3">
+                            རྩོམ་སྒྲིག་པ་ཞིབ་ཕྲ།
+                          </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2">
                               <span className="text-gray-600">མིང་།</span>

@@ -1,7 +1,7 @@
 import { SenseSchema } from "@/app/schemas/Schema";
 import ReactPortal from "@/app/Wrapper/ReactPortal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { RxCross2 } from "@/app/utils/Icon";
 import { z } from "zod";
@@ -52,10 +52,14 @@ const Sense = ({
   const [selectedParent, setSelectedParent] = useState<string>(
     initialData?.domainIds?.[0] || "",
   );
-
+  useEffect(() => {
+    console.log("Component mounted with initialData:", initialData);
+    console.log("Initial ID:", initialData?.id);
+  }, [initialData]);
   const mutation = useMutation({
     mutationFn: async (data: InputSense) => {
       if (initialData?.id) {
+        console.log("Editing sense with ID:", data.id);
         return editSense({
           ...data,
           id: initialData.id,
@@ -86,7 +90,59 @@ const Sense = ({
       console.error("Error submitting form:", error);
     },
   });
+  const editMutation = useMutation({
+    mutationFn: async (data: InputSense & { id: string }) => {
+      console.log("Editing sense:", data);
+      console.log("Initial data ID:", initialData?.id);
+      if (!initialData?.id) throw new Error("No ID provided for edit");
+      const editPayload: any = {
+        description: data.description,
+        has_illustration: data.has_illustration,
+        example_sentence: data.example_sentence,
+        posId: data.posId,
+        name_entityId: data.name_entityId,
+        registerId: data.registerId,
+      };
+      if (citationIds.length > 0) {
+        editPayload.connect_citation_ids = citationIds;
+      }
 
+      if (initialData?.citation?.length > 0) {
+        const disconnectIds = initialData.citation
+          .map((cit: any) => cit.id)
+          .filter((id) => !citationIds.includes(id));
+        if (disconnectIds.length > 0) {
+          editPayload.disconnect_citation_ids = disconnectIds;
+        }
+      }
+
+      if (data.domainIds?.length > 0) {
+        editPayload.connect_domain_ids = data.domainIds;
+      }
+
+      if (initialData?.domainIds?.length > 0) {
+        const disconnectDomains = initialData.domainIds.filter(
+          (id: string) => !data.domainIds.includes(id),
+        );
+        if (disconnectDomains.length > 0) {
+          editPayload.disconnect_domain_ids = disconnectDomains;
+        }
+      }
+
+      console.log("Edit payload:", editPayload);
+      return editSense({ ...editPayload, id: data.id });
+    },
+    onSuccess: (response) => {
+      console.log("Edit mutation success:", response);
+      const data = "data" in response ? response.data : response;
+      onSubmit(data);
+      reset();
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Error editing sense:", error);
+    },
+  });
   const {
     register,
     handleSubmit,
@@ -106,8 +162,16 @@ const Sense = ({
       domainIds: [],
     },
   });
-
+  const onError = (errors: any) => {
+    console.log("Form validation errors:", errors);
+  };
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log("Form errors:", errors);
+    }
+  }, [errors]);
   const handleFormSubmit = async (data: InputSense) => {
+    console.log("Form submission started");
     try {
       const formattedData = {
         description: data.description,
@@ -118,11 +182,15 @@ const Sense = ({
         registerId: String(data.registerId),
         wordId: wordId,
         domainIds: data.domainIds,
-        citationIds: citationIds,
       };
-
-      console.log("Submitting Sense Data tanstack:", formattedData);
-      mutation.mutate(formattedData);
+      console.log("i got trigger");
+      if (initialData?.id) {
+        console.log("Editing sense:", formattedData);
+        editMutation.mutate({ ...formattedData, id: initialData.id });
+      } else {
+        console.log("Creating new sense:", formattedData);
+        mutation.mutate(formattedData);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -155,7 +223,7 @@ const Sense = ({
             </div>
 
             <form
-              onSubmit={handleSubmit(handleFormSubmit)}
+              onSubmit={handleSubmit(handleFormSubmit, onError)}
               className="mt-6 space-y-6"
               autoComplete="off"
             >
@@ -314,6 +382,7 @@ const Sense = ({
                   type="submit"
                   className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-600"
                   disabled={isSubmitting}
+                  onClick={() => console.log("Button clicked")} // Add this temporarily
                 >
                   {initialData ? "ཞུ་དག" : "ཉར་ཚགས།"}
                 </button>

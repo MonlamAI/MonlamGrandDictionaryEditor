@@ -1,25 +1,27 @@
-'use client'
-import React from 'react'
-import Submits from '@/app/components/Buttons/Submit'
-import Toggle from '@/app/components/Buttons/Toggle'
-import { WordSchema } from '@/app/schemas/Schema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { useMutation } from '@tanstack/react-query'
-import { createWord } from '@/app/actions/PostActions'
-import SuccessMessage from '@/app/components/Card/SuccessMessage'
+"use client";
+import React from "react";
+import Submits from "@/app/components/Buttons/Submit";
+import Toggle from "@/app/components/Buttons/Toggle";
+import { WordSchema } from "@/app/schemas/Schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { createWord } from "@/app/actions/PostActions";
+import SuccessMessage from "@/app/components/Card/SuccessMessage";
 
-export type InputWord = z.infer<typeof WordSchema>
+export type InputWord = z.infer<typeof WordSchema>;
 
 interface WordFormProps {
   data: any;
-  onSubmitSuccess: (wordId: number) => void;  // Modified to pass wordId
+  onSubmitSuccess: (wordId: number) => void;
+  isSubmitted?: boolean;
 }
 
-const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
-  const [showSuccess, setShowSuccess] = React.useState(false)
-  
+const WordForm = ({ data, onSubmitSuccess, isSubmitted }: WordFormProps) => {
+  const [showSuccess, setShowSuccess] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const {
     register,
     handleSubmit,
@@ -29,32 +31,37 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
     mode: "onChange",
     defaultValues: {
       is_reviewed: false,
-    }
+    },
   });
 
   const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    handleSubmit(onSubmit)(e)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSubmitted || isSubmitting) return;
+    setIsSubmitting(true);
+    handleSubmit(onSubmit)(e);
+  };
 
   const mutation = useMutation({
     mutationFn: createWord,
     onSuccess: (response) => {
-      console.log('Word creation response:', response) // Log the response
-      const wordId = response.data.id // Extract the word ID
-      console.log('Created word ID:', wordId) // Log the word ID
-      setShowSuccess(true)
-      onSubmitSuccess(wordId) // Pass the word ID to the parent
+      console.log("Word creation response:", response);
+      const wordId = response.data.id;
+      console.log("Created word ID:", wordId);
+      setShowSuccess(true);
+      onSubmitSuccess(wordId);
       setTimeout(() => {
-        setShowSuccess(false)
-      }, 3000)
+        setShowSuccess(false);
+      }, 3000);
     },
-  })
+    onSettled: () => {
+      setIsSubmitting(false);
+    },
+  });
 
   const onSubmit: SubmitHandler<InputWord> = (data) => {
-    mutation.mutate(data)
-    console.log('Form data submitted:', data)
+    mutation.mutate(data);
+    console.log("Form data submitted:", data);
   };
 
   return (
@@ -65,6 +72,7 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
           <input
             className="ml-2 outline-none flex-grow"
             {...register("lemma")}
+            disabled={isSubmitted}
           />
         </div>
         {errors.lemma && (
@@ -78,7 +86,7 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
                 <Toggle register={register} value="is_mordern" />
               </div>
             </div>
-            
+
             <div className="flex items-center">
               <p className="ml-12">རྒྱུན་སྤྱོད།</p>
               <div className="mb-2">
@@ -86,14 +94,15 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex-1 flex items-center mt-1 space-x-2">
             <label className="shrink-0">འབྱུང་ཁུངས།</label>
             <select
               className="w-fit border-b border-black outline-none"
               {...register("originId")}
+              disabled={isSubmitted}
             >
-              {data.map((item:any) => (
+              {data.map((item: any) => (
                 <option key={item.id} value={item.id}>
                   {item.language}
                 </option>
@@ -102,18 +111,13 @@ const WordForm = ({ data, onSubmitSuccess }: WordFormProps) => {
           </div>
         </div>
 
-        <input
-          type="hidden"
-          {...register("is_reviewed")}
-        />
-        
-        <Submits />
-      </form>
-      {
-        showSuccess && <SuccessMessage />
-      }
-    </>
-  )
-}
+        <input type="hidden" {...register("is_reviewed")} />
 
-export default WordForm
+        <Submits disabled={isSubmitted || isSubmitting} />
+      </form>
+      {showSuccess && <SuccessMessage />}
+    </>
+  );
+};
+
+export default WordForm;
