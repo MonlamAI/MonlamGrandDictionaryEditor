@@ -358,3 +358,25 @@ export async function getworddetails(id: string) {
     throw error;
   }
 }
+
+export async function getuserrole(email: string) {
+  try {
+    const response = await axios.get(
+      `https://api.monlamdictionary.com/api/user/${email}`,
+      {
+        headers: {
+          apikey: process.env.API_KEY,
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data.role;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("API Error:", error.response?.data || error.message);
+      throw new Error(`Failed to fetch user role: ${error.message}`);
+    }
+    throw error;
+  }
+}
