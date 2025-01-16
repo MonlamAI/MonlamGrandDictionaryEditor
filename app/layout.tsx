@@ -9,10 +9,10 @@ import Navbar from "./components/NavItems/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://monlamgranddictionaryeditor.onrender.com/"),
   title: "Monlam Grand Dictionary Editor",
-  description: "This is a simple editor for the Monlam Grand Dictionary.",
+  description: "Monlam Grand Dictionary Editor Website",
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,19 +22,19 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-        <Providers>
-        <div className="flex h-screen overflow-hidden">
-          <div className="flex-shrink-0 max-sm:hidden">
-          <Sidebar/>
-          </div>
-          <div className="flex-grow overflow-auto">
-          <Navbar/>
-          {children}
-        </div>
-        </div>
-        </Providers>
+          <Providers>
+            <div className="flex h-screen overflow-hidden">
+              <div className="flex-shrink-0 max-sm:hidden">
+                <Sidebar />
+              </div>
+              <div className="flex-grow overflow-auto">
+                <Navbar />
+                {children}
+              </div>
+            </div>
+          </Providers>
         </AuthProvider>
-        </body>
+      </body>
     </html>
   );
 }
