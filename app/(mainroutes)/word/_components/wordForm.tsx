@@ -45,9 +45,9 @@ const WordForm = ({ data, onSubmitSuccess, isSubmitted }: WordFormProps) => {
   const mutation = useMutation({
     mutationFn: createWord,
     onSuccess: (response) => {
-      console.log("Word creation response:", response);
+      // console.log("Word creation response:", response);
       const wordId = response.data.id;
-      console.log("Created word ID:", wordId);
+      // console.log("Created word ID:", wordId);
       setShowSuccess(true);
       onSubmitSuccess(wordId);
       setTimeout(() => {
@@ -61,7 +61,7 @@ const WordForm = ({ data, onSubmitSuccess, isSubmitted }: WordFormProps) => {
 
   const onSubmit: SubmitHandler<InputWord> = (data) => {
     mutation.mutate(data);
-    console.log("Form data submitted:", data);
+    // console.log("Form data submitted:", data);
   };
 
   return (

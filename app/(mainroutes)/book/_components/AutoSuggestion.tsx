@@ -10,22 +10,22 @@ const AutoSuggestion = ({
   data,
   register,
   isSubmitting,
-  type = 'person'
+  type = "person",
 }: {
   label: string;
   name: string;
   data: any[];
   register: any;
   isSubmitting: boolean;
-  type?: 'person' | 'publisher';
+  type?: "person" | "publisher";
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [showmodal, setShowmodal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
   const suggestionsRef = useRef(null);
-  
+
   const { onChange, ...rest } = register(name);
 
   useEffect(() => {
@@ -76,8 +76,8 @@ const AutoSuggestion = ({
             autoComplete="off"
             disabled={isSubmitting}
           />
-          <input 
-            type="hidden" 
+          <input
+            type="hidden"
             {...rest}
             value={selectedPerson?.id || ""}
             disabled={isSubmitting}
@@ -92,9 +92,9 @@ const AutoSuggestion = ({
                 <div className="bg-white p-1 rounded-full" />
               </div>
               {showDetails && !isSubmitting && (
-                <DetailsPopup 
-                  person={selectedPerson} 
-                  type={type}  // Explicitly pass the type prop
+                <DetailsPopup
+                  person={selectedPerson}
+                  type={type} // Explicitly pass the type prop
                 />
               )}
             </div>
@@ -102,7 +102,10 @@ const AutoSuggestion = ({
         </div>
       </div>
       {showSuggestions && !isSubmitting && (
-        <div ref={suggestionsRef} className="absolute z-10 mt-1 font-monlam text-sm w-64 bg-white border border-black shadow-lg flex flex-col">
+        <div
+          ref={suggestionsRef}
+          className="absolute z-10 mt-1 font-monlam text-sm w-64 bg-white border border-black shadow-lg flex flex-col"
+        >
           <div className="max-h-28 overflow-y-auto">
             {filteredSuggestions.length > 0 ? (
               filteredSuggestions.map((suggestion: any) => (
@@ -120,16 +123,24 @@ const AutoSuggestion = ({
               </div>
             )}
           </div>
-          <div onClick={() => setShowmodal(!showmodal)} className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer">
-              <p>སྣོན་པ། </p>
-              <FaPlus />
-            </div>
+          <div
+            onClick={() => setShowmodal(!showmodal)}
+            className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer"
+          >
+            <p>སྣོན་པ། </p>
+            <FaPlus />
+          </div>
         </div>
-        
       )}
-      {
-        showmodal && <PersonModal isOpen={showmodal} handleClose={() => {setShowmodal(false); setInputValue("");}} />
-      }
+      {showmodal && (
+        <PersonModal
+          isOpen={showmodal}
+          handleClose={() => {
+            setShowmodal(false);
+            setInputValue("");
+          }}
+        />
+      )}
     </div>
   );
 };

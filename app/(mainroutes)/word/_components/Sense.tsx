@@ -52,14 +52,14 @@ const Sense = ({
   const [selectedParent, setSelectedParent] = useState<string>(
     initialData?.domainIds?.[0] || "",
   );
-  useEffect(() => {
-    console.log("Component mounted with initialData:", initialData);
-    console.log("Initial ID:", initialData?.id);
-  }, [initialData]);
+  // useEffect(() => {
+  //   console.log("Component mounted with initialData:", initialData);
+  //   console.log("Initial ID:", initialData?.id);
+  // }, [initialData]);
   const mutation = useMutation({
     mutationFn: async (data: InputSense) => {
       if (initialData?.id) {
-        console.log("Editing sense with ID:", data.id);
+        // console.log("Editing sense with ID:", data.id);
         return editSense({
           ...data,
           id: initialData.id,
@@ -79,7 +79,7 @@ const Sense = ({
       }
     },
     onSuccess: (response) => {
-      console.log("Success sensecreted:", response);
+      // console.log("Success sensecreted:", response);
       // Check if the response has a data property (from createSense)
       const data = "data" in response ? response.data : response;
       onSubmit(data);
@@ -92,8 +92,8 @@ const Sense = ({
   });
   const editMutation = useMutation({
     mutationFn: async (data: InputSense & { id: string }) => {
-      console.log("Editing sense:", data);
-      console.log("Initial data ID:", initialData?.id);
+      // console.log("Editing sense:", data);
+      // console.log("Initial data ID:", initialData?.id);
       if (!initialData?.id) throw new Error("No ID provided for edit");
       const editPayload: any = {
         description: data.description,
@@ -129,11 +129,11 @@ const Sense = ({
         }
       }
 
-      console.log("Edit payload:", editPayload);
+      // console.log("Edit payload:", editPayload);
       return editSense({ ...editPayload, id: data.id });
     },
     onSuccess: (response) => {
-      console.log("Edit mutation success:", response);
+      // console.log("Edit mutation success:", response);
       const data = "data" in response ? response.data : response;
       onSubmit(data);
       reset();
@@ -171,7 +171,7 @@ const Sense = ({
     }
   }, [errors]);
   const handleFormSubmit = async (data: InputSense) => {
-    console.log("Form submission started");
+    // console.log("Form submission started");
     try {
       const formattedData = {
         description: data.description,
@@ -183,12 +183,12 @@ const Sense = ({
         wordId: wordId,
         domainIds: data.domainIds,
       };
-      console.log("i got trigger");
+      // console.log("i got trigger");
       if (initialData?.id) {
-        console.log("Editing sense:", formattedData);
+        // console.log("Editing sense:", formattedData);
         editMutation.mutate({ ...formattedData, id: initialData.id });
       } else {
-        console.log("Creating new sense:", formattedData);
+        // console.log("Creating new sense:", formattedData);
         mutation.mutate(formattedData);
       }
     } catch (error) {
@@ -197,7 +197,7 @@ const Sense = ({
   };
 
   const handleCitationsChange = (newCitationIds: string[]) => {
-    console.log("Citation IDs changed:", newCitationIds);
+    // console.log("Citation IDs changed:", newCitationIds);
     setCitationIds(newCitationIds);
   };
 
@@ -382,7 +382,6 @@ const Sense = ({
                   type="submit"
                   className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-600"
                   disabled={isSubmitting}
-                  onClick={() => console.log("Button clicked")} // Add this temporarily
                 >
                   {initialData ? "ཞུ་དག" : "ཉར་ཚགས།"}
                 </button>

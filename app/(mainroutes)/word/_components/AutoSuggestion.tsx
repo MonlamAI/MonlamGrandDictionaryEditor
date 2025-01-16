@@ -8,21 +8,21 @@ const AutoSuggestionBook = ({
   data,
   register,
   isSubmitting,
-  type = 'person',
-  value // Add value prop to track the selected value
+  type = "person",
+  value, // Add value prop to track the selected value
 }: {
   label: string;
   name: string;
   data: any[];
   register: any;
   isSubmitting: boolean;
-  type?: 'person' | 'publisher';
+  type?: "person" | "publisher";
   value?: string;
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [showmodal, setShowmodal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState<any>(null);
   const suggestionsRef = useRef(null);
 
   const { onChange, ...rest } = register(name);
@@ -30,7 +30,7 @@ const AutoSuggestionBook = ({
   // Update input value when value prop changes or component mounts
   useEffect(() => {
     if (value) {
-      const selectedItem = data.find(item => item.id === value);
+      const selectedItem = data.find((item) => item.id === value);
       if (selectedItem) {
         setInputValue(selectedItem.name);
         setSelectedPerson(selectedItem);
@@ -95,7 +95,10 @@ const AutoSuggestionBook = ({
         </div>
       </div>
       {showSuggestions && !isSubmitting && (
-        <div ref={suggestionsRef} className="absolute z-10 mt-1 font-monlam text-sm w-64 bg-white border border-black shadow-lg flex flex-col">
+        <div
+          ref={suggestionsRef}
+          className="absolute z-10 mt-1 font-monlam text-sm w-64 bg-white border border-black shadow-lg flex flex-col"
+        >
           <div className="max-h-28 overflow-y-auto">
             {filteredSuggestions.length > 0 ? (
               filteredSuggestions.map((suggestion: any) => (
@@ -113,7 +116,10 @@ const AutoSuggestionBook = ({
               </div>
             )}
           </div>
-          <div onClick={() => setShowmodal(!showmodal)} className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer">
+          <div
+            onClick={() => setShowmodal(!showmodal)}
+            className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer"
+          >
             <p>སྣོན་པ། </p>
             <FaPlus />
           </div>

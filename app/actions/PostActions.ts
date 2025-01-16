@@ -65,7 +65,7 @@ export async function createPublisher(data: z.infer<typeof PublisherSchema>) {
 
 export async function createBook(data: z.infer<typeof bookSchema>) {
   const cleandata = cleanData(data);
-  console.log(cleandata);
+  // console.log(cleandata);
   try {
     const response = await axios.post(
       "https://api.monlamdictionary.com/api/grand/metadata/book/create",

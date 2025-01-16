@@ -134,16 +134,16 @@ const CitationForm = ({
   const createCitationMutation = useMutation({
     mutationFn: createCitation,
     onSuccess: (data, variables, context) => {
-      console.log("Citation created successfully:", data);
-      console.log("Citation variables:", variables);
+      // console.log("Citation created successfully:", data);
+      // console.log("Citation variables:", variables);
       const index = fields.length - 1;
-      console.log("Using index:", index);
+      // console.log("Using index:", index);
       if (index !== -1) {
         const newCitationIds = [...citationIds];
         // Make sure we're getting the ID from the correct place in the response
-        const citationId = data.data?.id || data.id;
+        const citationId = data.data?.id;
         newCitationIds[index] = citationId;
-        console.log("New citation IDs:", newCitationIds);
+        // console.log("New citation IDs:", newCitationIds);
         setCitationIds(newCitationIds);
         onCitationsChange(newCitationIds);
       }
@@ -152,7 +152,7 @@ const CitationForm = ({
 
   const handleSaveCitation = (index: number) => {
     const citation = watch(`citations.${index}`);
-    console.log("Saving citation:", citation, "at index:", index);
+    // console.log("Saving citation:", citation, "at index:", index);
 
     createCitationMutation.mutate(citation);
   };
