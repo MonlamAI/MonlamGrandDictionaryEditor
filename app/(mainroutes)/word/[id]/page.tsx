@@ -7,7 +7,7 @@ const Worddynamic = async ({ params }: any) => {
   return (
     <div className=" flex flex-col items-center w-full h-40 justify-center font-monlam">
       <p>WORD:{worddetail.lemma}</p>
-      <p>ORIGIN:{worddetail.origin.language}</p>
+      <p>ORIGIN:{worddetail.origin?.language}</p>
     </div>
   );
 };
