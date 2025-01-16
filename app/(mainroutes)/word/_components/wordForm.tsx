@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import Submits from "@/app/components/Buttons/Submit";
 import Toggle from "@/app/components/Buttons/Toggle";
@@ -34,20 +35,10 @@ const WordForm = ({ data, onSubmitSuccess, isSubmitted }: WordFormProps) => {
     },
   });
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isSubmitted || isSubmitting) return;
-    setIsSubmitting(true);
-    handleSubmit(onSubmit)(e);
-  };
-
   const mutation = useMutation({
     mutationFn: createWord,
     onSuccess: (response) => {
-      // console.log("Word creation response:", response);
       const wordId = response.data.id;
-      // console.log("Created word ID:", wordId);
       setShowSuccess(true);
       onSubmitSuccess(wordId);
       setTimeout(() => {
@@ -60,8 +51,17 @@ const WordForm = ({ data, onSubmitSuccess, isSubmitted }: WordFormProps) => {
   });
 
   const onSubmit: SubmitHandler<InputWord> = (data) => {
+    setIsSubmitting(true);
     mutation.mutate(data);
-    // console.log("Form data submitted:", data);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSubmitted) return;
+
+    // Instead of setting isSubmitting here, let the form validation run first
+    handleSubmit(onSubmit)(e);
   };
 
   return (
