@@ -228,11 +228,16 @@ const Sense = ({
               autoComplete="off"
             >
               <div className="space-y-4">
-                <div className="flex items-center">
+                <div className="flex w w-full items-center">
                   <label className="w-24">འགྲེལ་བ།</label>
-                  <input
-                    className="flex-1 border-b border-black outline-none"
+                  <textarea
+                    className="flex-1 resize-none overflow-hidden border-b border-black outline-none"
+                    rows={1}
                     {...register("description")}
+                    onInput={(e: any) => {
+                      e.target.style.height = "auto";
+                      e.target.style.height = e.target.scrollHeight + "px";
+                    }}
                   />
                 </div>
                 {errors.description && (
@@ -240,13 +245,20 @@ const Sense = ({
                     {errors.description.message}
                   </p>
                 )}
-                <div className="flex items-center">
+
+                <div className="flex w w-full items-center">
                   <label className="w-24">དཔེར་བརྗོད་ཚིག་གྲུབ།</label>
-                  <input
-                    className="flex-1 border-b border-black outline-none"
+                  <textarea
+                    className="flex-1 resize-none overflow-hidden border-b border-black outline-none"
+                    rows={1}
                     {...register("example_sentence")}
+                    onInput={(e: any) => {
+                      e.target.style.height = "auto";
+                      e.target.style.height = e.target.scrollHeight + "px";
+                    }}
                   />
                 </div>
+
                 {errors.example_sentence && (
                   <p className="text-red-500 text-sm">
                     {errors.example_sentence.message}

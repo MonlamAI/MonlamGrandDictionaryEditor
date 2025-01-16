@@ -1,50 +1,70 @@
-'use client'
-import { createBook } from '@/app/actions/PostActions';
-import Submits from '@/app/components/Buttons/Submit';
-import SuccessMessage from '@/app/components/Card/SuccessMessage';
-import { bookSchema } from '@/app/schemas/Schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import React from 'react'
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import AutoSuggestion from './AutoSuggestion';
+"use client";
+import { createBook } from "@/app/actions/PostActions";
+import Submits from "@/app/components/Buttons/Submit";
+import SuccessMessage from "@/app/components/Card/SuccessMessage";
+import { bookSchema } from "@/app/schemas/Schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import AutoSuggestion from "./AutoSuggestion";
 
-
-type WordType = z.infer<typeof bookSchema>
-const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,AuthorData}:any) => {
- const [showSuccess, setShowSuccess] = React.useState(false)
- const router = useRouter()
-  const {register,handleSubmit,reset, formState: { errors, isSubmitting },
+type WordType = z.infer<typeof bookSchema>;
+const WordForm = ({
+  pubdata,
+  EditorData,
+  TertonData,
+  TranslatorData,
+  PrintMethodData,
+  AuthorData,
+}: any) => {
+  const [showSuccess, setShowSuccess] = React.useState(false);
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
   } = useForm<WordType>({
     resolver: zodResolver(bookSchema),
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const mutation = useMutation({
     mutationFn: createBook,
     onSuccess: () => {
-      reset()
-      setShowSuccess(true)
+      reset();
+      setShowSuccess(true);
       setTimeout(() => {
-        setShowSuccess(false)
-        router.push("/")
-      }, 2000)
+        setShowSuccess(false);
+        router.push("/");
+      }, 2000);
     },
-  })
+  });
   const onSubmit = async (data: WordType) => {
     //  console.log(data)
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
   return (
     <div>
-        <form onSubmit={handleSubmit(onSubmit)} className="w-fit my-9">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-fit my-9">
         <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >མཚན་བྱང་།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("title")} disabled={isSubmitting}/>
+          <div className="flex w w-full items-center">
+            <label className="w-24">མཚན་བྱང་།</label>
+            <textarea
+              className="flex-1 resize-none overflow-hidden border-b border-black outline-none"
+              rows={1}
+              {...register("title")}
+              disabled={isSubmitting}
+              onInput={(e: any) => {
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
+            />
           </div>
+
           {errors.title && (
             <span className="text-red-500 font-monlam text-sm ml-2">
               *{errors.title.message}
@@ -52,48 +72,64 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
           )}
         </div>
         <div className="flex mt-3 max-sm:flex-col justify-between gap-4">
-        <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >མཚན་བྱང་བསྡུས་པ།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("abbreviated_title")} disabled={isSubmitting}/>
+          <div className="flex flex-col">
+            <div className="flex space-x-2  w-full items-center">
+              <label className=" shrink-0">མཚན་བྱང་བསྡུས་པ།</label>
+              <textarea
+                className="flex-1 resize-none overflow-hidden border-b border-black outline-none"
+                rows={1}
+                {...register("abbreviated_title")}
+                disabled={isSubmitting}
+                onInput={(e: any) => {
+                  e.target.style.height = "auto";
+                  e.target.style.height = e.target.scrollHeight + "px";
+                }}
+              />
+            </div>
+
+            {errors.abbreviated_title && (
+              <span className="text-red-500 font-monlam text-sm ml-2">
+                *{errors.abbreviated_title.message}
+              </span>
+            )}
           </div>
-          {errors.abbreviated_title && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.abbreviated_title.message}
-            </span>
-          )}
-        </div>
-         
-        <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label >པར་སྐྲུན་ལོ།</label>
-            <input type='number' className="ml-2 outline-none text-lg w-64"
-              {...register("year_of_publish",{
-                valueAsNumber: true,
-                required: true,
-              })}
-              disabled={isSubmitting}
-            />
+
+          <div className="flex flex-col">
+            <div className="flex items-center border-b border-black pb-2 w-fit">
+              <label>པར་སྐྲུན་ལོ།</label>
+              <input
+                type="number"
+                className="ml-2 outline-none text-lg w-64"
+                {...register("year_of_publish", {
+                  valueAsNumber: true,
+                  required: true,
+                })}
+                disabled={isSubmitting}
+              />
+            </div>
+            {errors.year_of_publish && (
+              <span className="text-red-500 font-monlam text-sm ml-2">
+                *{errors.year_of_publish.message}
+              </span>
+            )}
           </div>
-          {errors.year_of_publish && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.year_of_publish.message}
-            </span>
-          )}
-        </div>
         </div>
         <div className="flex mt-3 max-sm:flex-col justify-between gap-4">
-        <div className="flex flex-col">
-          <div className="flex items-center border-b border-black pb-2 w-fit">
-            <label>རྩོམ་སྒྲིག་གི་རྣམ་པ།</label>
-            <input className="ml-2 outline-none text-lg w-64" {...register("collection_name")} disabled={isSubmitting}/>
+          <div className="flex flex-col">
+            <div className="flex items-center border-b border-black pb-2 w-fit">
+              <label>རྩོམ་སྒྲིག་གི་རྣམ་པ།</label>
+              <input
+                className="ml-2 outline-none text-lg w-64"
+                {...register("collection_name")}
+                disabled={isSubmitting}
+              />
+            </div>
+            {errors.collection_name && (
+              <span className="text-red-500 font-monlam text-sm ml-2">
+                *{errors.collection_name.message}
+              </span>
+            )}
           </div>
-          {errors.collection_name && (
-            <span className="text-red-500 font-monlam text-sm ml-2">
-              *{errors.collection_name.message}
-            </span>
-          )}
-        </div>
           <div className="flex flex-col w-72">
             <div className="flex items-center space-x-2 border-b border-black pb-2">
               <label className="shrink-0">དཔར་སྐྲུན་བྱེད་སྟངས།</label>
@@ -102,7 +138,7 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
                 {...register("print_methodId")}
                 disabled={isSubmitting}
               >
-                {PrintMethodData.map((method:any) => (
+                {PrintMethodData.map((method: any) => (
                   <option className="text-sm" key={method.id} value={method.id}>
                     {method.name}
                   </option>
@@ -117,25 +153,57 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
           </div>
         </div>
         <div className="flex max-sm:flex-col justify-between mt-3 gap-4">
-          <AutoSuggestion label="རྩོམ་སྒྲིག་པ་མིང་།" name="editorId" data={EditorData} register={register} isSubmitting={isSubmitting}/>
-        
-        <AutoSuggestion label="གཏེར་སྟོན་མིང་།" name="tertonId" data={TertonData} register={register} isSubmitting={isSubmitting}/>
+          <AutoSuggestion
+            label="རྩོམ་སྒྲིག་པ་མིང་།"
+            name="editorId"
+            data={EditorData}
+            register={register}
+            isSubmitting={isSubmitting}
+          />
 
-       
-          
+          <AutoSuggestion
+            label="གཏེར་སྟོན་མིང་།"
+            name="tertonId"
+            data={TertonData}
+            register={register}
+            isSubmitting={isSubmitting}
+          />
         </div>
         <div className="flex max-sm:flex-col justify-between mt-3 gap-4">
-          <AutoSuggestion label="རྩོམ་པ་པོ་མིང་།" name="authorId" data={AuthorData} register={register} isSubmitting={isSubmitting}/>
-        
-        <AutoSuggestion label="ལོ་ཙཱ་བ་མིང་།" name="translatorId" data={TranslatorData} register={register} isSubmitting={isSubmitting}/>
+          <AutoSuggestion
+            label="རྩོམ་པ་པོ་མིང་།"
+            name="authorId"
+            data={AuthorData}
+            register={register}
+            isSubmitting={isSubmitting}
+          />
+
+          <AutoSuggestion
+            label="ལོ་ཙཱ་བ་མིང་།"
+            name="translatorId"
+            data={TranslatorData}
+            register={register}
+            isSubmitting={isSubmitting}
+          />
         </div>
-        <div className=' mt-2'>
-        <AutoSuggestion label="དཔེ་སྐྲུན་མིང་།" name="publisherId" data={pubdata} register={register} isSubmitting={isSubmitting} type="publisher"/>        
+        <div className=" mt-2">
+          <AutoSuggestion
+            label="དཔེ་སྐྲུན་མིང་།"
+            name="publisherId"
+            data={pubdata}
+            register={register}
+            isSubmitting={isSubmitting}
+            type="publisher"
+          />
         </div>
         <div className="flex flex-col mt-3">
           <div className="flex items-center font-inter text-sm border-b border-black pb-2 w-fit">
-            <label className=' font-bold' >BDRC LINK</label>
-            <input className="ml-2 outline-none w-64" {...register("digital_ref")} disabled={isSubmitting}/>
+            <label className=" font-bold">BDRC LINK</label>
+            <input
+              className="ml-2 outline-none w-64"
+              {...register("digital_ref")}
+              disabled={isSubmitting}
+            />
           </div>
           {errors.digital_ref && (
             <span className="text-red-500 font-monlam text-sm ml-2">
@@ -144,9 +212,7 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
           )}
         </div>
         <div className="mt-6">
-          <Submits
-            disabled={isSubmitting}
-          />
+          <Submits disabled={isSubmitting} />
         </div>
       </form>
       {mutation.isError && (
@@ -157,7 +223,7 @@ const WordForm = ({pubdata,EditorData,TertonData,TranslatorData,PrintMethodData,
 
       {showSuccess && <SuccessMessage />}
     </div>
-  )
-}
+  );
+};
 
-export default WordForm
+export default WordForm;

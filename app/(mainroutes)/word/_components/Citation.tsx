@@ -274,11 +274,16 @@ const CitationForm = ({
 
               {openStates[index] && (
                 <div className="p-4">
-                  <div>
-                    <input
-                      placeholder="ལུང་།"
+                  <div className="flex space-x-2  w-full items-center">
+                    <label className=" shrink-0">ལུང་།</label>
+                    <textarea
                       className="w-full border-b border-black outline-none pb-2"
+                      rows={1}
                       {...register(`citations.${index}.text`)}
+                      onInput={(e: any) => {
+                        e.target.style.height = "auto";
+                        e.target.style.height = e.target.scrollHeight + "px";
+                      }}
                     />
                   </div>
 
@@ -556,14 +561,14 @@ const CitationForm = ({
                       </div>
                       <div>
                         <label htmlFor="folio" className="shrink-0">
-                          ཐིག་ཕྲེང་།
+                          ཤོག་ལྡེབ་
                         </label>
                         <select
                           className="border-b w-24 border-black outline-none pb-2"
                           {...register(`citations.${index}.location.folio`)}
                         >
-                          <option value="ས">ས་</option>
-                          <option value="ན">ན་</option>
+                          <option value="བ">བ།</option>
+                          <option value="ན">ན།</option>
                         </select>
                       </div>
                     </div>
