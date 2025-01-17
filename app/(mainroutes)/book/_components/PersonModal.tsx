@@ -1,20 +1,26 @@
-'use client'
-import React, { useEffect } from 'react'
-import ReactPortal from '@/app/Wrapper/ReactPortal'
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { z } from "zod"
-import { createPerson } from "@/app/actions/PostActions"
-import { typeofMinaOptions } from "@/app/utils/util"
-import { personSchema } from "@/app/schemas/Schema"
+"use client";
+import React, { useEffect } from "react";
+import ReactPortal from "@/app/Wrapper/ReactPortal";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { createPerson } from "@/app/actions/PostActions";
+import { changetibnumtoreal, typeofMinaOptions } from "@/app/utils/util";
+import { personSchema } from "@/app/schemas/Schema";
 
-type InputMina = z.infer<typeof personSchema>
+type InputMina = z.infer<typeof personSchema>;
 
-const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: () => void }) => {
-  const router = useRouter()
-  const [showSuccess, setShowSuccess] = React.useState(false)
+const PersonModal = ({
+  isOpen,
+  handleClose,
+}: {
+  isOpen: boolean;
+  handleClose: () => void;
+}) => {
+  const router = useRouter();
+  const [showSuccess, setShowSuccess] = React.useState(false);
 
   const {
     register,
@@ -24,59 +30,86 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
   } = useForm<InputMina>({
     resolver: zodResolver(personSchema),
     mode: "onChange",
-  })
+  });
 
   const mutation = useMutation({
     mutationFn: createPerson,
     onSuccess: () => {
-      reset()
-      setShowSuccess(true)
+      reset();
+      setShowSuccess(true);
       setTimeout(() => {
-        setShowSuccess(false)
-        handleClose()
-        router.refresh()
-      }, 2000)
+        setShowSuccess(false);
+        handleClose();
+        router.refresh();
+      }, 2000);
     },
-  })
+  });
 
   const onSubmit = async (data: InputMina) => {
-    mutation.mutate(data);
+    const convertedBirthYear = changetibnumtoreal(data.year_of_birth);
+    const convertedDeathYear = changetibnumtoreal(data.year_of_death);
+    mutation.mutate({
+      ...data,
+      year_of_birth: convertedBirthYear,
+      year_of_death: convertedDeathYear,
+    });
   };
-  
+
   useEffect(() => {
     if (!isOpen) {
       reset();
     }
   }, [isOpen, reset]);
-  
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
   const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    handleSubmit(onSubmit)(e)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    handleSubmit(onSubmit)(e);
+  };
   return (
     <ReactPortal wrapperId="modal-wrapper">
       <div className="fixed font-monlam top-0 left-0 w-screen h-screen bg-neutral-800 bg-opacity-50 z-50 flex items-center justify-center">
         <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <img src="/images/logo.webp" alt="Logo" width={48} height={48} className="rounded-md" />
+              <img
+                src="/images/logo.webp"
+                alt="Logo"
+                width={48}
+                height={48}
+                className="rounded-md"
+              />
             </div>
-            <button onClick={handleClose} className="text-black bg-white p-2 rounded-full hover:bg-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <button
+              onClick={handleClose}
+              className="text-black bg-white p-2 rounded-full hover:bg-gray-100"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
           </div>
 
-          <form  onSubmit={handleFormSubmit}   className="space-y-4">
+          <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="flex items-center space-x-2">
               <label className="shrink-0">རིགས།</label>
               <select
@@ -118,17 +151,13 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
                 <label>སྐྱེས་ལོ།</label>
                 <input
                   id="birthyear"
-                  type="number"
-                  className="outline-none font-inter text-sm"
-                  {...register("year_of_birth", {
-                    valueAsNumber: true,
-                    required: true,
-                  })}
+                  className="outline-none "
+                  {...register("year_of_birth")}
                   disabled={isSubmitting}
                 />
               </div>
               {errors.year_of_birth && (
-                <span className="text-red-500 font-inter text-sm ml-2">
+                <span className="text-red-500  ml-2">
                   *{errors.year_of_birth.message}
                 </span>
               )}
@@ -139,14 +168,13 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
                 <label htmlFor="deathDate">འདས་ལོ།</label>
                 <input
                   id="deathDate"
-                  type="number"
-                  className="outline-none font-inter text-sm"
-                  {...register("year_of_death", { valueAsNumber: true })}
+                  className="outline-none "
+                  {...register("year_of_death")}
                   disabled={isSubmitting}
                 />
               </div>
               {errors.year_of_death && (
-                <span className="text-red-500 font-inter text-sm ml-2">
+                <span className="text-red-500 ml-2">
                   *{errors.year_of_death.message}
                 </span>
               )}
@@ -154,7 +182,7 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
 
             <div className="flex flex-col">
               <div className="flex items-center border-b border-black pb-2 w-full">
-                <label className=' shrink-0'>མི་རིགས།</label>
+                <label className=" shrink-0">མི་རིགས།</label>
                 <input
                   id="race"
                   className="ml-2 outline-none w-full"
@@ -169,12 +197,12 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
               )}
             </div>
             <button
-      type="submit"
-      disabled={isSubmitting}
-      className=" text-base font-inter bg-secondary-400 text-secondary-50 px-2 py-1 rounded-md ">
-      {isSubmitting ? "Submitting..." : "Submit"}
-    </button>
-            
+              type="submit"
+              disabled={isSubmitting}
+              className=" text-base font-inter bg-secondary-400 text-secondary-50 px-2 py-1 rounded-md "
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </button>
           </form>
 
           {mutation.isError && (
@@ -182,16 +210,16 @@ const PersonModal = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: ()
               {mutation.error.message}
             </div>
           )}
-         
-          {showSuccess && 
-          <div className='mt-4 p-2 w-fit mx-auto bg-success-100 border border-success-400 text-success-700 rounded-md'>
-          Data submitted successfully
-          </div>
-            }
+
+          {showSuccess && (
+            <div className="mt-4 p-2 w-fit mx-auto bg-success-100 border border-success-400 text-success-700 rounded-md">
+              Data submitted successfully
+            </div>
+          )}
         </div>
       </div>
     </ReactPortal>
-  )
-}
+  );
+};
 
-export default PersonModal
+export default PersonModal;

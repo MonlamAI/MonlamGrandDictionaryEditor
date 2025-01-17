@@ -1,23 +1,23 @@
-'use client'
-import React from "react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { z } from "zod"
-import { createPerson } from "@/app/actions/PostActions"
-import { typeofMinaOptions } from "@/app/utils/util"
-import Breadcrumb from "@/app/components/Card/BreadCrumb"
-import Submits from "@/app/components/Buttons/Submit"
-import SuccessMessage from "@/app/components/Card/SuccessMessage"
-import { personSchema } from "@/app/schemas/Schema"
+"use client";
+import React from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { createPerson } from "@/app/actions/PostActions";
+import { changetibnumtoreal, typeofMinaOptions } from "@/app/utils/util";
+import Breadcrumb from "@/app/components/Card/BreadCrumb";
+import Submits from "@/app/components/Buttons/Submit";
+import SuccessMessage from "@/app/components/Card/SuccessMessage";
+import { personSchema } from "@/app/schemas/Schema";
 
-type InputMina = z.infer<typeof personSchema>
+type InputMina = z.infer<typeof personSchema>;
 
 const Person = () => {
-  const router = useRouter()
-  const [showSuccess, setShowSuccess] = React.useState(false)
+  const router = useRouter();
+  const [showSuccess, setShowSuccess] = React.useState(false);
 
   const {
     register,
@@ -27,27 +27,39 @@ const Person = () => {
   } = useForm<InputMina>({
     resolver: zodResolver(personSchema),
     mode: "onChange",
-  })
+  });
 
   const mutation = useMutation({
     mutationFn: createPerson,
     onSuccess: () => {
-      reset()
-      setShowSuccess(true)
+      reset();
+      setShowSuccess(true);
       setTimeout(() => {
-        setShowSuccess(false)
-        router.push("/")
-      }, 3000)
+        setShowSuccess(false);
+        router.push("/");
+      }, 3000);
     },
-  })
+  });
 
   const onSubmit = async (data: InputMina) => {
-    mutation.mutate(data)
-  }
+    const convertedBirthYear = changetibnumtoreal(data.year_of_birth);
+    const convertedDeathYear = changetibnumtoreal(data.year_of_death);
+    mutation.mutate({
+      ...data,
+      year_of_birth: convertedBirthYear,
+      year_of_death: convertedDeathYear,
+    });
+  };
 
   return (
     <div className="font-monlam sm:px-16 p-4">
-      <Image src="/images/logo.webp" alt="Logo" width={64} height={64} className="rounded-md" />
+      <Image
+        src="/images/logo.webp"
+        alt="Logo"
+        width={64}
+        height={64}
+        className="rounded-md"
+      />
       <p className="text-xl font-semibold mt-2">
         སྨོན་ལམ་ཚིག་མཛོད་ཆེན་མོ་རྩོམ་སྒྲིག་མ་ལག
       </p>
@@ -96,17 +108,13 @@ const Person = () => {
             <label>སྐྱེས་ལོ།</label>
             <input
               id="birthyear"
-              type="number"
-              className="outline-none font-inter text-sm"
-              {...register("year_of_birth", {
-                valueAsNumber: true,
-                required: true,
-              })}
+              className="outline-none "
+              {...register("year_of_birth")}
               disabled={isSubmitting}
             />
           </div>
           {errors.year_of_birth && (
-            <span className="text-red-500 font-inter text-sm ml-2">
+            <span className="text-red-500 text-sm   ml-2">
               *{errors.year_of_birth.message}
             </span>
           )}
@@ -117,14 +125,13 @@ const Person = () => {
             <label htmlFor="deathDate">འདས་ལོ།</label>
             <input
               id="deathDate"
-              type="number"
-              className="outline-none font-inter text-sm"
-              {...register("year_of_death", { valueAsNumber: true })}
+              className="outline-none "
+              {...register("year_of_death")}
               disabled={isSubmitting}
             />
           </div>
           {errors.year_of_death && (
-            <span className="text-red-500 font-inter text-sm ml-2">
+            <span className="text-red-500 text-sm ml-2">
               *{errors.year_of_death.message}
             </span>
           )}
@@ -158,7 +165,7 @@ const Person = () => {
 
       {showSuccess && <SuccessMessage />}
     </div>
-  )
-}
+  );
+};
 
-export default Person
+export default Person;

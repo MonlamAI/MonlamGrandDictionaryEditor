@@ -10,6 +10,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import AutoSuggestion from "./AutoSuggestion";
+import { changetibnumtoreal } from "@/app/utils/util";
 
 type WordType = z.infer<typeof bookSchema>;
 const WordForm = ({
@@ -44,7 +45,11 @@ const WordForm = ({
     },
   });
   const onSubmit = async (data: WordType) => {
-    mutation.mutate(data);
+    const convertedYear = changetibnumtoreal(data.year_of_publish);
+    mutation.mutate({
+      ...data,
+      year_of_publish: convertedYear,
+    });
   };
   return (
     <div>
@@ -97,12 +102,9 @@ const WordForm = ({
             <div className="flex items-center border-b border-black pb-2 w-fit">
               <label>པར་སྐྲུན་ལོ།</label>
               <input
-                type="number"
-                className="ml-2 outline-none text-lg w-64"
-                {...register("year_of_publish", {
-                  valueAsNumber: true,
-                  required: true,
-                })}
+                id="yearofpublish"
+                className="ml-2 outline-none w-64"
+                {...register("year_of_publish")}
                 disabled={isSubmitting}
               />
             </div>
