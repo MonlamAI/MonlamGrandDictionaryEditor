@@ -18,8 +18,14 @@ export const personSchema = z.object({
     .string()
     .min(3, "མིང་ཡིག་འབྲུ་གསུམ་ཡན་དགོས།")
     .regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
-  year_of_birth: z.number().min(1, "སྐྱེས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།"),
-  year_of_death: z.number().min(1, "འདས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།"),
+  year_of_birth: z
+    .string()
+    .min(1, "སྐྱེས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།")
+    .regex(/^[༠-༩]+$/, "སྐྱེས་ལོ་བོད་ཡིག་ཨང་ཀི་ནང་འབྲི་རོགས།"),
+  year_of_death: z
+    .string()
+    .min(1, "འདས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།")
+    .regex(/^[༠-༩]+$/, "སྐྱེས་ལོ་བོད་ཡིག་ཨང་ཀི་ནང་འབྲི་རོགས།"),
   nationality: z
     .string()
     .min(2, "མི་རིགས་ཡིག་འབྲུ་གཉིས་ཡན་དགོས།")
@@ -35,7 +41,10 @@ export const bookSchema = z.object({
     .string()
     .min(1, "ངེས་པར་དུ་འབྲི་དགོས།")
     .regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
-  year_of_publish: z.number().min(1, "ངེས་པར་དུ་འབྲི་དགོས།"),
+  year_of_publish: z
+    .string()
+    .min(1, "སྐྱེས་ལོ་ཨང་ཀི་ནང་འབྲི་རོགས།")
+    .regex(/^[༠-༩]+$/, "སྐྱེས་ལོ་བོད་ཡིག་ཨང་ཀི་ནང་འབྲི་རོགས།"),
   collection_name: z.string().regex(tibetanRegex, "བོད་ཡིག་ནང་འབྲི་རོགས།"),
   print_methodId: z.string(),
   editorId: z.string(),
