@@ -1,25 +1,37 @@
-import { SenseSchema } from "@/app/schemas/Schema";
-import ReactPortal from "@/app/Wrapper/ReactPortal";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { RxCross2 } from "@/app/utils/Icon";
-import { z } from "zod";
-import CitationForm from "./Citation";
+"use client";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { RxCross2 } from "@/app/utils/Icon";
+import ReactPortal from "@/app/Wrapper/ReactPortal";
+import { SenseSchema } from "@/app/schemas/Schema";
+import CitationForm from "./Citation";
 import { createSense, editSense } from "@/app/actions/PostActions";
+import LabelSelector from "./LabelSelector";
+
+interface Label {
+  id: string;
+  text: string;
+  parent_id: string | null;
+}
 
 export type InputSense = z.infer<typeof SenseSchema>;
 
 interface SenseProps {
   onClose: () => void;
-  domaindata: any;
+  domaindata: Label[];
   posData: any;
   registerData: any;
   nameEntityData: any;
   onSubmit: (data: InputSense) => void;
-  initialData?: InputSense & { id?: string; citation?: any[] };
-  wordId: any;
+  initialData?: InputSense & {
+    id?: string;
+    citation?: any[];
+    domain?: Label[];
+  };
+  wordId: string;
   bookData: any;
   Authordata: any;
   Editordata: any;
@@ -49,18 +61,16 @@ const Sense = ({
   const [citationIds, setCitationIds] = useState<string[]>(
     initialData?.citation?.map((cit) => cit.id) || [],
   );
-  const [selectedParent, setSelectedParent] = useState<string>(
-    initialData?.domainIds?.[0] || "",
-  );
-  // useEffect(() => {
-  //   console.log("Component mounted with initialData:", initialData);
-  //   console.log("Initial ID:", initialData?.id);
-  // }, [initialData]);
+  const [selectedDomainIds, setSelectedDomainIds] = useState<string[]>(() => {
+    if (initialData?.domainIds) {
+      return initialData.domainIds;
+    }
+    return initialData?.domain?.map((domain) => domain.id) || [];
+  });
   const mutation = useMutation({
     mutationFn: async (data: InputSense) => {
       if (initialData?.id) {
-        // console.log("Editing sense with ID:", data.id);
-        return editSense({
+        const editData = {
           ...data,
           id: initialData.id,
           connect_citation_ids: citationIds,
@@ -68,19 +78,23 @@ const Sense = ({
             initialData.citation
               ?.map((cit) => cit.id)
               .filter((id) => !citationIds.includes(id)) || [],
-          connect_domain_ids: data.domainIds,
+          connect_domain_ids: selectedDomainIds,
           disconnect_domain_ids:
-            initialData.domainIds?.filter(
-              (id: string) => !data.domainIds.includes(id),
-            ) || [],
-        });
+            initialData.domain
+              ?.map((domain: any) => domain.id)
+              .filter((id: string) => !selectedDomainIds.includes(id)) || [],
+        };
+        return editSense(editData);
       } else {
-        return createSense({ ...data, citationIds });
+        const createData = {
+          ...data,
+          citationIds,
+          domainIds: selectedDomainIds,
+        };
+        return createSense(createData);
       }
     },
     onSuccess: (response) => {
-      // console.log("Success sensecreted:", response);
-      // Check if the response has a data property (from createSense)
       const data = "data" in response ? response.data : response;
       onSubmit(data);
       reset();
@@ -90,64 +104,11 @@ const Sense = ({
       console.error("Error submitting form:", error);
     },
   });
-  const editMutation = useMutation({
-    mutationFn: async (data: InputSense & { id: string }) => {
-      // console.log("Editing sense:", data);
-      // console.log("Initial data ID:", initialData?.id);
-      if (!initialData?.id) throw new Error("No ID provided for edit");
-      const editPayload: any = {
-        description: data.description,
-        has_illustration: data.has_illustration,
-        example_sentence: data.example_sentence,
-        posId: data.posId,
-        name_entityId: data.name_entityId,
-        registerId: data.registerId,
-      };
-      if (citationIds.length > 0) {
-        editPayload.connect_citation_ids = citationIds;
-      }
 
-      if (initialData?.citation?.length > 0) {
-        const disconnectIds = initialData.citation
-          .map((cit: any) => cit.id)
-          .filter((id) => !citationIds.includes(id));
-        if (disconnectIds.length > 0) {
-          editPayload.disconnect_citation_ids = disconnectIds;
-        }
-      }
-
-      if (data.domainIds?.length > 0) {
-        editPayload.connect_domain_ids = data.domainIds;
-      }
-
-      if (initialData?.domainIds?.length > 0) {
-        const disconnectDomains = initialData.domainIds.filter(
-          (id: string) => !data.domainIds.includes(id),
-        );
-        if (disconnectDomains.length > 0) {
-          editPayload.disconnect_domain_ids = disconnectDomains;
-        }
-      }
-
-      // console.log("Edit payload:", editPayload);
-      return editSense({ ...editPayload, id: data.id });
-    },
-    onSuccess: (response) => {
-      // console.log("Edit mutation success:", response);
-      const data = "data" in response ? response.data : response;
-      onSubmit(data);
-      reset();
-      onClose();
-    },
-    onError: (error) => {
-      console.error("Error editing sense:", error);
-    },
-  });
   const {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { errors, isSubmitting },
   } = useForm<InputSense>({
     resolver: zodResolver(SenseSchema),
@@ -162,16 +123,13 @@ const Sense = ({
       domainIds: [],
     },
   });
-  const onError = (errors: any) => {
-    console.log("Form validation errors:", errors);
+
+  const handleDomainSelection = (labels: Label[]) => {
+    const domainIds = labels.map((label) => label.id);
+    setSelectedDomainIds(domainIds);
   };
-  useEffect(() => {
-    if (Object.keys(errors).length > 0) {
-      console.log("Form errors:", errors);
-    }
-  }, [errors]);
+
   const handleFormSubmit = async (data: InputSense) => {
-    // console.log("Form submission started");
     try {
       const formattedData = {
         description: data.description,
@@ -181,30 +139,18 @@ const Sense = ({
         name_entityId: String(data.name_entityId),
         registerId: String(data.registerId),
         wordId: wordId,
-        domainIds: data.domainIds,
+        domainIds: selectedDomainIds,
       };
-      // console.log("i got trigger");
-      if (initialData?.id) {
-        // console.log("Editing sense:", formattedData);
-        editMutation.mutate({ ...formattedData, id: initialData.id });
-      } else {
-        // console.log("Creating new sense:", formattedData);
-        mutation.mutate(formattedData);
-      }
+
+      mutation.mutate(formattedData);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
 
   const handleCitationsChange = (newCitationIds: string[]) => {
-    // console.log("Citation IDs changed:", newCitationIds);
     setCitationIds(newCitationIds);
   };
-
-  const parents = domaindata.filter((domain: any) => domain.parent_id === null);
-  const children = domaindata.filter(
-    (domain: any) => domain.parent_id !== null,
-  );
 
   return (
     <ReactPortal wrapperId="sense-wrapper">
@@ -223,12 +169,12 @@ const Sense = ({
             </div>
 
             <form
-              onSubmit={handleSubmit(handleFormSubmit, onError)}
+              onSubmit={handleSubmit(handleFormSubmit)}
               className="mt-6 space-y-6"
               autoComplete="off"
             >
               <div className="space-y-4">
-                <div className="flex w w-full items-center">
+                <div className="flex w-full items-center">
                   <label className="w-24">འགྲེལ་བ།</label>
                   <textarea
                     className="flex-1 resize-none overflow-hidden border-b border-black outline-none"
@@ -246,7 +192,7 @@ const Sense = ({
                   </p>
                 )}
 
-                <div className="flex w w-full items-center">
+                <div className="flex w-full items-center">
                   <label className="w-24">དཔེར་བརྗོད་ཚིག་གྲུབ།</label>
                   <textarea
                     className="flex-1 resize-none overflow-hidden border-b border-black outline-none"
@@ -258,7 +204,6 @@ const Sense = ({
                     }}
                   />
                 </div>
-
                 {errors.example_sentence && (
                   <p className="text-red-500 text-sm">
                     {errors.example_sentence.message}
@@ -296,71 +241,6 @@ const Sense = ({
               </div>
 
               <div className="flex space-x-4">
-                <div className="flex-1">
-                  <Controller
-                    name="domainIds"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex items-center space-x-2">
-                        <label>བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
-                        <select
-                          className="w-full border-b border-black outline-none pb-2"
-                          onChange={(e) => {
-                            setSelectedParent(e.target.value);
-                            field.onChange([e.target.value]);
-                          }}
-                          value={selectedParent}
-                        >
-                          {parents.map((parent: any) => (
-                            <option key={parent.id} value={parent.id}>
-                              {parent.text}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                  />
-                </div>
-                {selectedParent &&
-                  children.some(
-                    (child: any) => child.parent_id === selectedParent,
-                  ) && (
-                    <div className="flex-1">
-                      <Controller
-                        name="domainIds"
-                        control={control}
-                        render={({ field }) => (
-                          <div className="flex items-center space-x-2">
-                            <label>བྱིས་པའི་ཁྱབ་ཁོངས་འདེམས།</label>
-                            <select
-                              className="w-full border-b border-black outline-none pb-2"
-                              onChange={(e) => {
-                                const newValue = [
-                                  ...field.value,
-                                  e.target.value,
-                                ];
-                                field.onChange(newValue);
-                              }}
-                            >
-                              {children
-                                .filter(
-                                  (child: any) =>
-                                    child.parent_id === selectedParent,
-                                )
-                                .map((child: any) => (
-                                  <option key={child.id} value={child.id}>
-                                    {child.text}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                        )}
-                      />
-                    </div>
-                  )}
-              </div>
-
-              <div className="flex space-x-4">
                 <div className="flex-1 flex items-center space-x-2">
                   <label className="shrink-0">མིང་གི་རྣམ་གྲངས།</label>
                   <select
@@ -388,7 +268,14 @@ const Sense = ({
                   </label>
                 </div>
               </div>
-
+              <div className="space-y-2">
+                <label>བརྡ་ཆད་དབྱེ་བའི་སྡེ་ཚན།</label>
+                <LabelSelector
+                  onSelectionChange={handleDomainSelection}
+                  initialSelected={initialData?.domainIds}
+                  domains={domaindata}
+                />
+              </div>
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -399,6 +286,7 @@ const Sense = ({
                 </button>
               </div>
             </form>
+
             <CitationForm
               bookData={bookData}
               authorData={Authordata}

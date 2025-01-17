@@ -4,7 +4,6 @@ import { useMutation } from "@tanstack/react-query";
 import { FaAngleDown, FaAngleUp } from "@/app/utils/Icon";
 import AutoSuggestionBook from "./AutoSuggestion";
 import { z } from "zod";
-import axios from "axios";
 import { createCitation } from "@/app/actions/PostActions";
 
 const LocationSchema = z.object({
@@ -121,29 +120,15 @@ const CitationForm = ({
   const [citationIds, setCitationIds] = React.useState<string[]>(
     initialCitations.map((citation) => citation.id) || [],
   );
-  const handleAddCitation = () => {
-    append({
-      text: "",
-      bookId: "",
-      location: {},
-    });
-    setOpenStates((prev) => [...prev, true]);
-    // Also extend the citationIds array
-    setCitationIds((prev) => [...prev, ""]);
-  };
+
   const createCitationMutation = useMutation({
     mutationFn: createCitation,
-    onSuccess: (data, variables, context) => {
-      // console.log("Citation created successfully:", data);
-      // console.log("Citation variables:", variables);
+    onSuccess: (data) => {
       const index = fields.length - 1;
-      // console.log("Using index:", index);
       if (index !== -1) {
         const newCitationIds = [...citationIds];
-        // Make sure we're getting the ID from the correct place in the response
         const citationId = data.data?.id;
         newCitationIds[index] = citationId;
-        // console.log("New citation IDs:", newCitationIds);
         setCitationIds(newCitationIds);
         onCitationsChange(newCitationIds);
       }
@@ -152,8 +137,6 @@ const CitationForm = ({
 
   const handleSaveCitation = (index: number) => {
     const citation = watch(`citations.${index}`);
-    // console.log("Saving citation:", citation, "at index:", index);
-
     createCitationMutation.mutate(citation);
   };
 

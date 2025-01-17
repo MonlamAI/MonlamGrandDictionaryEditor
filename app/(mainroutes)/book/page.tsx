@@ -26,7 +26,6 @@ const Word = async () => {
     getTranslator(),
     getPrintMethod(),
   ]);
-  // console.log(TranslatorData)
   return (
     <div className="font-monlam p-2 text-lg sm:ml-16 ml-4 mb-9">
       <img src="/images/logo.webp" className="w-16 rounded-md" alt="Logo" />
