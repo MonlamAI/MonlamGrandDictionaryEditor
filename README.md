@@ -33,7 +33,7 @@ Before you begin, ensure you have the following prerequisites installed and conf
 1. Clone the repository:
 
    ```bash
-   git clone git@github.com:OpenPecha/monlam-dictionary-editor.git
+   git clone git@github.com:OpenPecha/MonlamGrandDictionaryEditor.git
    ```
 
 2. Change into the project directory:
@@ -55,12 +55,13 @@ Before you begin, ensure you have the following prerequisites installed and conf
    ```env
    # PostgreSQL Database Configuration
    DATABASE_URL=your-db-connection-string
-
+   API_KEY= api key to perform fetch
    # Auth0 Configuration
-   AUTH0_DOMAIN=your-auth0-domain
+   AUTH0_SECRET=your_secret
+   AUTH0_BASE_URL=baseurl
    AUTH0_CLIENT_ID=your-auth0-client-id
    AUTH0_CLIENT_SECRET=your-auth0-client-secret
-   AUTH0_CALLBACK_URL=http://localhost:3000/callback # Adjust this URL for your environment
+   AUTH0_ISSUER_BASE_URL=http: baseurl with domain
    ```
 
    Replace `your-db-connection-string`, `your-auth0-domain`, `your-auth0-client-id`, `your-auth0-client-secret` with your specific database and Auth0 credentials.
