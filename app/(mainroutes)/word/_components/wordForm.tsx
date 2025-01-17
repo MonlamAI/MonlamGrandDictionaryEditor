@@ -83,7 +83,7 @@ const WordForm = ({ data, onSubmitSuccess, isSubmitted }: WordFormProps) => {
             <div className="flex items-center">
               <p>མ་ཚིག་གསར་པ།</p>
               <div className="mb-2">
-                <Toggle register={register} value="is_mordern" />
+                <Toggle register={register} value="is_modern" />
               </div>
             </div>
 

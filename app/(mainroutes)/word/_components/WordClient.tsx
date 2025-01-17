@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Breadcrumb from "@/app/components/Card/BreadCrumb";
 import Status from "@/app/components/Status";
-import { FaEdit, FaPlus } from "@/app/utils/Icon";
+import { FaPlus } from "@/app/utils/Icon";
 import WordForm from "./wordForm";
 import Sense from "./Sense";
 
@@ -46,11 +46,13 @@ export default function WordClient({
       citationIds: sense.citation
         ? sense.citation.map((cit: any) => cit.id)
         : [],
+      domainIds: sense.domain
+        ? sense.domain.map((domain: any) => domain.id)
+        : [],
     };
     setEditingSense(transformedSense);
     setisSenseOpen(true);
   };
-
   const handleWordSubmitSuccess = (id: number) => {
     setWordId(id);
     setIsWordSubmitted(true);

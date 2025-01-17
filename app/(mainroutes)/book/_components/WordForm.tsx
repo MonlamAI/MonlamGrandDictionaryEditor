@@ -44,7 +44,6 @@ const WordForm = ({
     },
   });
   const onSubmit = async (data: WordType) => {
-    //  console.log(data)
     mutation.mutate(data);
   };
   return (

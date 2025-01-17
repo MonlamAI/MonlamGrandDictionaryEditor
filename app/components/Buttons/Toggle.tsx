@@ -1,9 +1,15 @@
 import React from "react";
 import { UseFormRegister } from "react-hook-form";
 
-const Toggle = ({ register, value }: { register: UseFormRegister<any>; value: string }) => {
+const Toggle = ({
+  register,
+  value,
+}: {
+  register: UseFormRegister<any>;
+  value: string;
+}) => {
   const registerProps =
-    value === "is_mordern" ? register("is_mordern") : register("is_frequent");
+    value === "is_modern" ? register("is_modern") : register("is_frequent");
   return (
     <div>
       <div className=" ml-2 mt-3 flex items-center justify-center">
