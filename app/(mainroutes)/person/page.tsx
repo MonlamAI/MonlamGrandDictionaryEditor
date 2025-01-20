@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,7 +52,7 @@ const Person = () => {
 
   return (
     <div className="font-monlam sm:px-16 p-4">
-      <Image
+      <img
         src="/images/logo.webp"
         alt="Logo"
         width={64}
