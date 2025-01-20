@@ -1,15 +1,21 @@
-import { getworddetails } from "@/app/actions/GetActions";
+import { getOrigin, getworddetails } from "@/app/actions/GetActions";
 import React from "react";
-
-const Worddynamic = async ({ params }: any) => {
+import Mainclient from "./_components/Mainclient";
+const WordDynamic = async ({ params }: any) => {
   const decodedWord = decodeURIComponent(params.id as string);
   const worddetail = await getworddetails(decodedWord);
+  const origindata = await getOrigin();
   return (
-    <div className=" flex flex-col items-center w-full h-40 justify-center font-monlam">
-      <p>WORD:{worddetail.lemma}</p>
-      <p>ORIGIN:{worddetail.origin?.language}</p>
+    <div className="max-w-4xl mx-auto p-4 font-monlam">
+      <div className="flex flex-col items-center mb-8">
+        <img src="/images/logo.webp" alt="Logo" className="w-16 rounded-md" />
+        <p className="text-xl font-semibold mt-2">
+          སྨོན་ལམ་ཚིག་མཛོད་ཆེན་མོ་རྩོམ་སྒྲིག་མ་ལག
+        </p>
+      </div>
+      <Mainclient data={origindata} worddetail={worddetail} />
     </div>
   );
 };
 
-export default Worddynamic;
+export default WordDynamic;

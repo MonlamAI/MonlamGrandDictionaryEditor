@@ -7,6 +7,7 @@ import { SiTicktick } from "react-icons/si";
 import { FaEdit } from "react-icons/fa";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { RxExit } from "react-icons/rx";
+import { MdEdit } from "react-icons/md";
 export {
   IoIosSearch,
   IoHomeOutline,
@@ -18,4 +19,5 @@ export {
   FaAngleDown,
   FaAngleUp,
   RxExit,
+  MdEdit,
 };
