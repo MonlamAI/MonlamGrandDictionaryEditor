@@ -11,6 +11,7 @@ import {
 } from "../schemas/Schema";
 import axios from "axios";
 import { cleanData, typeMap } from "../utils/util";
+import { InputWord } from "../(mainroutes)/word/_components/wordForm";
 
 export async function createPerson(data: z.infer<typeof personSchema>) {
   try {
@@ -166,3 +167,29 @@ export async function createCitation(data: z.infer<typeof CitationSchema>) {
     throw new Error("An unexpected error occurred");
   }
 }
+
+// In PostActions.ts
+export const updateword = async (id: number, data: InputWord) => {
+  try {
+    const response = await axios.put(
+      `https://api.monlamdictionary.com/api/grand/word/edit/${id}`,
+      {
+        lemma: data.lemma,
+        is_modern: data.is_modern,
+        is_reviewed: data.is_reviewed,
+        is_frequent: data.is_frequent,
+        originId: data.originId,
+      },
+      {
+        headers: {
+          apikey: process.env.API_KEY,
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to update word");
+  }
+};

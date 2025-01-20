@@ -74,6 +74,7 @@ export default function WordClient({
         data={originData}
         onSubmitSuccess={handleWordSubmitSuccess}
         isSubmitted={isWordSubmitted}
+        wordid={wordId}
       />
 
       <button
