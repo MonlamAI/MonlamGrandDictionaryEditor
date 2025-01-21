@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
@@ -10,34 +10,41 @@ interface ItemlistProps {
   searchQuery: string;
 }
 
-interface Word {
-  id: number;
-  lemma: string;
-  is_reviewed: boolean;
-}
-
 const PAGE_SIZE = 20;
 
 const Itemlist: React.FC<ItemlistProps> = ({ searchQuery }) => {
   const { ref, inView } = useInView();
-
   const fetchWords = async ({ pageParam = 1 }) => {
     const data = await getWords(pageParam, PAGE_SIZE);
     return data;
   };
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfiniteQuery({
-      queryKey: ["words", searchQuery],
-      queryFn: fetchWords,
-      getNextPageParam: (lastPage) =>
-        lastPage.current_page < lastPage.total_pages
-          ? lastPage.current_page + 1
-          : undefined,
-      initialPageParam: 1,
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["words", searchQuery],
+    queryFn: fetchWords,
+    getNextPageParam: (lastPage) =>
+      lastPage.current_page < lastPage.total_pages
+        ? lastPage.current_page + 1
+        : undefined,
+    initialPageParam: 1,
+  });
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      refetch();
+    }, 5000);
+
+    return () => clearInterval(refreshInterval);
+  }, [refetch]);
+
+  useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
     }
@@ -48,16 +55,17 @@ const Itemlist: React.FC<ItemlistProps> = ({ searchQuery }) => {
     word.lemma.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  if (status === "pending")
-    return (
-      <div className="text-center font-monlam animate-pulse p-4">
-        སྒུག་རོགས་གནང་། .....
-      </div>
-    );
-  if (status === "error")
+  if (status === "pending") {
+    return <div className="text-center p-4">སྒུག་རོགས་གནང་། .....</div>;
+  }
+
+  if (status === "error") {
     return <div className="text-center p-4">Error fetching words</div>;
-  if (filteredWords.length === 0)
+  }
+
+  if (filteredWords.length === 0) {
     return <div className="text-center p-4">No matching words found</div>;
+  }
 
   return (
     <div className="mt-4 h-80 bg-secondary-700 overflow-y-scroll rounded-md">
@@ -79,27 +87,26 @@ const Itemlist: React.FC<ItemlistProps> = ({ searchQuery }) => {
   );
 };
 
-const WordItem = React.forwardRef<HTMLDivElement, { word: Word }>(
-  ({ word }, ref) => {
-    const router = useRouter();
-    const handleWordClick = () => {
-      router.push(`/word/${word.lemma}`);
-    };
+const WordItem = React.forwardRef(({ word }, ref) => {
+  const router = useRouter();
 
-    return (
-      <div
-        ref={ref}
-        className="border-b border-secondary-500 p-2"
-        onClick={handleWordClick}
-      >
-        <div className="flex items-center justify-between cursor-pointer font-monlam">
-          {word.lemma}
-          <Status statustype={word.is_reviewed ? "reviewed" : "pending"} />
-        </div>
+  const handleWordClick = () => {
+    router.push(`/word/${encodeURIComponent(word.lemma)}`);
+  };
+
+  return (
+    <div
+      ref={ref}
+      className="border-b border-secondary-500 p-2"
+      onClick={handleWordClick}
+    >
+      <div className="flex items-center justify-between cursor-pointer font-monlam">
+        {word.lemma}
+        <Status statustype={word.is_reviewed ? "reviewed" : "pending"} />
       </div>
-    );
-  },
-);
+    </div>
+  );
+});
 
 WordItem.displayName = "WordItem";
 

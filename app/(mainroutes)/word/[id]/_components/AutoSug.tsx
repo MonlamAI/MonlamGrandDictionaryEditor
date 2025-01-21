@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { filterSuggestions } from "@/app/utils/util";
-import { FaPlus } from "@/app/utils/Icon";
 
-const AutoSuggestionBook = ({
+const AutoSug = ({
   label,
   name,
   data,
   register,
   isSubmitting,
-  type = "person",
   value,
   disabled = false,
 }: {
@@ -22,7 +20,6 @@ const AutoSuggestionBook = ({
   disabled?: boolean;
 }) => {
   const [inputValue, setInputValue] = useState("");
-  const [showmodal, setShowmodal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<any>(null);
   const suggestionsRef = useRef(null);
@@ -117,17 +114,10 @@ const AutoSuggestionBook = ({
               </div>
             )}
           </div>
-          <div
-            onClick={() => setShowmodal(!showmodal)}
-            className="flex items-center justify-between border-t p-2 border-gray-600 bg-primary-50 rounded-md cursor-pointer"
-          >
-            <p>སྣོན་པ། </p>
-            <FaPlus />
-          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default AutoSuggestionBook;
+export default AutoSug;

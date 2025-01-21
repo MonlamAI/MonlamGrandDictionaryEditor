@@ -1,28 +1,20 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import { IoClose } from "react-icons/io5";
-import { IoCheckmark } from "react-icons/io5";
 
-interface Label {
-  id: string;
-  text: string;
-  parent_id: string | null;
-}
-
-interface GroupedLabel extends Label {
-  children: Label[];
-}
-
-interface LabelSelectorProps {
-  onSelectionChange?: (labels: Label[]) => void;
-  initialSelected?: string[];
-  domains: Label[];
-}
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
+import { IoClose, IoCheckmark } from "react-icons/io5";
+import { GroupedLabel, Label, LabelSelectorProps } from "../_types/type";
 
 const LabelSelector: React.FC<LabelSelectorProps> = ({
   onSelectionChange,
   initialSelected = [],
   domains,
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
@@ -38,24 +30,17 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     }
   }, [initialSelected, domains]);
 
-  const groupedItems: Record<string, GroupedLabel> = domains.reduce(
-    (acc, item) => {
+  const groupedItems = useMemo(() => {
+    const grouped: Record<string, GroupedLabel> = {};
+    domains.forEach((item) => {
       if (!item.parent_id) {
-        acc[item.id] = {
-          ...item,
-          children: [],
-        };
+        grouped[item.id] = { ...item, children: [] };
+      } else if (grouped[item.parent_id]) {
+        grouped[item.parent_id].children.push(item);
       }
-      return acc;
-    },
-    {} as Record<string, GroupedLabel>,
-  );
-
-  domains.forEach((item) => {
-    if (item.parent_id && groupedItems[item.parent_id]) {
-      groupedItems[item.parent_id].children.push(item);
-    }
-  });
+    });
+    return grouped;
+  }, [domains]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,69 +56,87 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredItems = Object.values(groupedItems).filter((item) => {
-    const matchesParent = item.text
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesChildren = item.children.some((child) =>
-      child.text.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    return matchesParent || matchesChildren;
-  });
+  const filteredItems = useMemo(() => {
+    return Object.values(groupedItems).filter((item) => {
+      const matchesParent = item.text
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesChildren = item.children.some((child) =>
+        child.text.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+      return matchesParent || matchesChildren;
+    });
+  }, [groupedItems, searchTerm]);
 
-  const isSelected = (label: Label): boolean => {
-    return selectedLabels.some((l) => l.id === label.id);
-  };
+  const isSelected = useCallback(
+    (label: Label): boolean => {
+      return selectedLabels.some((l) => l.id === label.id);
+    },
+    [selectedLabels],
+  );
 
-  const isParentSelected = (parentId: string | null): boolean => {
-    if (!parentId) return true;
-    return selectedLabels.some((l) => l.id === parentId);
-  };
+  const isParentSelected = useCallback(
+    (parentId: string | null): boolean => {
+      if (!parentId) return true;
+      return selectedLabels.some((l) => l.id === parentId);
+    },
+    [selectedLabels],
+  );
 
-  const toggleLabel = (label: Label) => {
-    if (label.parent_id && !isParentSelected(label.parent_id)) {
-      return;
-    }
-
-    setSelectedLabels((prev) => {
-      const isCurrentlySelected = prev.some((l) => l.id === label.id);
-      let newSelection: Label[];
-
-      if (isCurrentlySelected) {
-        if (!label.parent_id) {
-          newSelection = prev.filter(
-            (l) => l.id !== label.id && l.parent_id !== label.id,
-          );
-        } else {
-          newSelection = prev.filter((l) => l.id !== label.id);
-        }
-      } else {
-        newSelection = [...prev, label];
+  const toggleLabel = useCallback(
+    (label: Label) => {
+      if (disabled) return;
+      if (label.parent_id && !isParentSelected(label.parent_id)) {
+        return;
       }
 
-      onSelectionChange?.(newSelection);
-      return newSelection;
-    });
-  };
+      setSelectedLabels((prev) => {
+        const isCurrentlySelected = prev.some((l) => l.id === label.id);
+        let newSelection: Label[];
 
-  const removeLabel = (label: Label) => {
-    setSelectedLabels((prev) => {
-      const newSelection = prev.filter((l) => {
-        if (!label.parent_id) {
-          return l.id !== label.id && l.parent_id !== label.id;
+        if (isCurrentlySelected) {
+          if (!label.parent_id) {
+            newSelection = prev.filter(
+              (l) => l.id !== label.id && l.parent_id !== label.id,
+            );
+          } else {
+            newSelection = prev.filter((l) => l.id !== label.id);
+          }
+        } else {
+          newSelection = [...prev, label];
         }
-        return l.id !== label.id;
+
+        onSelectionChange?.(newSelection);
+        return newSelection;
       });
-      onSelectionChange?.(newSelection);
-      return newSelection;
-    });
-  };
+    },
+    [disabled, isParentSelected, onSelectionChange],
+  );
+
+  const removeLabel = useCallback(
+    (label: Label) => {
+      if (disabled) return;
+      setSelectedLabels((prev) => {
+        const newSelection = prev.filter((l) => {
+          if (!label.parent_id) {
+            return l.id !== label.id && l.parent_id !== label.id;
+          }
+          return l.id !== label.id;
+        });
+        onSelectionChange?.(newSelection);
+        return newSelection;
+      });
+    },
+    [disabled, onSelectionChange],
+  );
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <div
-        className="min-h-[38px] p-2 border border-black rounded-md flex flex-wrap gap-2 cursor-text"
-        onClick={() => setIsOpen(true)}
+        className={`min-h-[38px] p-2 border border-black rounded-md flex flex-wrap gap-2 ${
+          disabled ? "cursor-not-allowed bg-gray-100" : "cursor-text"
+        }`}
+        onClick={() => !disabled && setIsOpen(true)}
       >
         {selectedLabels.map((label) => (
           <span
@@ -141,25 +144,27 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
             className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm"
           >
             {label.text}
-            <IoClose
-              className="w-4 h-4 cursor-pointer hover:text-blue-600"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeLabel(label);
-              }}
-            />
+            {!disabled && (
+              <IoClose
+                className="w-4 h-4 cursor-pointer hover:text-blue-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeLabel(label);
+                }}
+              />
+            )}
           </span>
         ))}
       </div>
 
-      {isOpen && (
+      {isOpen && !disabled && (
         <div className="absolute w-fit mt-1 p-2 shadow-lg z-50 bg-white rounded-md border">
           <input
             type="text"
             placeholder="Filter labels..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md mb-2 focus:outline-none "
+            className="w-full px-3 py-2 border rounded-md mb-2 focus:outline-none"
           />
 
           <div className="max-h-[300px] overflow-y-auto">
