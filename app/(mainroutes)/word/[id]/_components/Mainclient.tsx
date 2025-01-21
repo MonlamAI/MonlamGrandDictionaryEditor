@@ -18,9 +18,10 @@ const Mainclient = ({
   Translatordata,
   PublisherData,
   printmethoddata,
+  userrole,
 }: any) => {
   return (
-    <ReviewProvider worddetail={worddetail}>
+    <ReviewProvider worddetail={worddetail} userRole={userrole}>
       <div>
         <div className="w-full flex justify-between items-center mb-2">
           <div className="flex text-sm gap-x-2 justify-between w-full items-center p-2 rounded-full">

@@ -8,7 +8,7 @@ import { getNextUnreviewedWord } from "@/app/actions/GetActions";
 
 const ReviewContext = createContext(null);
 
-export const ReviewProvider = ({ children, worddetail }: any) => {
+export const ReviewProvider = ({ children, worddetail, userRole }: any) => {
   const router = useRouter();
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -80,6 +80,7 @@ export const ReviewProvider = ({ children, worddetail }: any) => {
         isAllChecked,
         handleReviewSubmit,
         worddetail,
+        userRole,
       }}
     >
       {children}
@@ -97,7 +98,10 @@ export const useReview = () => {
 };
 
 export const ReviewStatus = () => {
-  const { isAllChecked, handleReviewSubmit, worddetail } = useReview();
+  const { isAllChecked, handleReviewSubmit, worddetail, userRole } =
+    useReview();
+
+  if (userRole !== "editor") return null;
 
   return (
     <div className="w-full flex justify-between items-center mb-2">
@@ -127,8 +131,10 @@ export const ReviewStatus = () => {
 };
 
 export const LemmaCheckbox = () => {
-  const { toggleLemmaCheck, checkedItems, worddetail } = useReview();
-  if (worddetail.is_reviewed) return null;
+  const { toggleLemmaCheck, checkedItems, worddetail, userRole } = useReview();
+
+  if (userRole !== "editor" || worddetail.is_reviewed) return null;
+
   return (
     <input
       type="checkbox"
@@ -141,8 +147,10 @@ export const LemmaCheckbox = () => {
 };
 
 export const SenseCheckbox = ({ index }: any) => {
-  const { toggleSenseCheck, checkedItems, worddetail } = useReview();
-  if (worddetail.is_reviewed) return null;
+  const { toggleSenseCheck, checkedItems, worddetail, userRole } = useReview();
+
+  if (userRole !== "editor" || worddetail.is_reviewed) return null;
+
   return (
     <input
       type="checkbox"

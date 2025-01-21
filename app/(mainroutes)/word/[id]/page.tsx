@@ -11,11 +11,26 @@ import {
   getRegister,
   getTerton,
   getTranslator,
+  getuserrole,
   getworddetails,
 } from "@/app/actions/GetActions";
 import React from "react";
 import Mainclient from "./_components/Mainclient";
+import { getSession } from "@auth0/nextjs-auth0";
+
+async function getSessionUser() {
+  const session = await getSession();
+  return session?.user;
+}
+
 const WordDynamic = async ({ params }: any) => {
+  const user = await getSessionUser();
+
+  let userRole = null;
+  if (user?.email) {
+    userRole = await getuserrole(user.email);
+  }
+
   const decodedWord = decodeURIComponent(params.id as string);
   const worddetail = await getworddetails(decodedWord);
   const [
@@ -68,6 +83,7 @@ const WordDynamic = async ({ params }: any) => {
         Translatordata={Translatordata}
         PublisherData={PublisherData}
         printmethoddata={printmethoddata}
+        userrole={userRole}
       />
     </div>
   );
