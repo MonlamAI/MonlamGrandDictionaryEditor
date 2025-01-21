@@ -3,11 +3,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { FaAngleDown, FaAngleUp } from "@/app/utils/Icon";
 import { createCitation } from "@/app/actions/PostActions";
-import AutoSug from "../[id]/_components/AutoSug";
-import {
-  CitationFormProps,
-  FormData,
-} from "@/app/(mainroutes)/word/_types/type";
+import AutoSug from "./AutoSug";
+import { CitationFormProps, FormData } from "../_types/type";
 import {
   findAuthorById,
   findBookById,
@@ -18,7 +15,7 @@ import {
   findTranslatorById,
 } from "@/app/utils/util";
 
-const CitationForm = ({
+const CitationSegmentation = ({
   bookData,
   authorData = [],
   Editordata = [],
@@ -28,6 +25,7 @@ const CitationForm = ({
   printmethoddata = [],
   onCitationsChange,
   initialCitations = [],
+  disabled = false,
 }: CitationFormProps) => {
   const { control, register, watch } = useForm<FormData>({
     defaultValues: {
@@ -45,13 +43,13 @@ const CitationForm = ({
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control,
     name: "citations",
   });
 
   const [openStates, setOpenStates] = React.useState<boolean[]>(
-    new Array(initialCitations.length).fill(true),
+    new Array(initialCitations.length).fill(false),
   );
   const [citationIds, setCitationIds] = React.useState<string[]>(
     initialCitations.map((citation) => citation.id) || [],
@@ -76,19 +74,6 @@ const CitationForm = ({
     createCitationMutation.mutate(citation);
   };
 
-  const handleRemoveCitation = (index: number) => {
-    remove(index);
-    const newCitationIds = [...citationIds];
-    newCitationIds.splice(index, 1);
-    setCitationIds(newCitationIds);
-    onCitationsChange(newCitationIds);
-    setOpenStates((prev) => {
-      const newStates = [...prev];
-      newStates.splice(index, 1);
-      return newStates;
-    });
-  };
-
   const toggleAccordion = (index: number) => {
     setOpenStates((prev) => {
       const newStates = [...prev];
@@ -110,24 +95,6 @@ const CitationForm = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-x-4 items-center">
-        <p className="font-monlam text-xl font-semibold">མཆན།</p>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            append({
-              text: "",
-              bookId: "",
-              location: {},
-            });
-            setOpenStates((prev) => [...prev, true]);
-          }}
-          className="px-4 py-2 border-gray-300 shadow border rounded-lg"
-        >
-          +
-        </button>
-      </div>
-
       <div className="space-y-2">
         {fields.map((field, index) => {
           const bookId = watch(`citations.${index}.bookId`);
@@ -161,7 +128,7 @@ const CitationForm = ({
             <div key={field.id} className="border rounded-lg shadow-sm">
               <div
                 onClick={() => toggleAccordion(index)}
-                className="flex justify-between items-center p-3 cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex justify-between items-center p-3 cursor-pointerbg-gray-50 hover:bg-gray-100`}
               >
                 <span className="font-monlam">མཆན། {index + 1}</span>
                 <div className="flex items-center gap-2">
@@ -178,6 +145,7 @@ const CitationForm = ({
                   <div className="flex space-x-2  w-full items-center">
                     <label className=" shrink-0">ལུང་།</label>
                     <textarea
+                      disabled={disabled}
                       className="w-full border-b border-black outline-none pb-2"
                       rows={1}
                       {...register(`citations.${index}.text`)}
@@ -196,6 +164,7 @@ const CitationForm = ({
                       register={register}
                       isSubmitting={false}
                       value={watch(`citations.${index}.bookId`)}
+                      disabled={disabled}
                     />
                   </div>
 
@@ -440,6 +409,7 @@ const CitationForm = ({
                         <input
                           className="w-full border-b border-black outline-none"
                           {...register(`citations.${index}.location.volume`)}
+                          disabled={disabled}
                         />
                       </div>
                       <div className="flex space-x-2 items-center">
@@ -449,6 +419,7 @@ const CitationForm = ({
                           {...register(
                             `citations.${index}.location.pageNumber`,
                           )}
+                          disabled={disabled}
                         />
                       </div>
                       <div className="flex space-x-2 items-center">
@@ -458,6 +429,7 @@ const CitationForm = ({
                           {...register(
                             `citations.${index}.location.lineNumber`,
                           )}
+                          disabled={disabled}
                         />
                       </div>
                       <div>
@@ -467,6 +439,7 @@ const CitationForm = ({
                         <select
                           className="border-b w-24 border-black outline-none pb-2"
                           {...register(`citations.${index}.location.folio`)}
+                          disabled={disabled}
                         >
                           <option value="བ">བ།</option>
                           <option value="ན">ན།</option>
@@ -478,16 +451,10 @@ const CitationForm = ({
                   <div className="mt-4 flex justify-end space-x-2">
                     <button
                       type="button"
-                      onClick={() => handleRemoveCitation(index)}
-                      className="px-4 py-2 text-red-500 border border-red-500 rounded hover:bg-red-50"
-                    >
-                      Remove
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => handleSaveCitation(index)}
                       className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:bg-gray-400"
                       disabled={
+                        disabled ||
                         !watch(`citations.${index}.bookId`) ||
                         !watch(`citations.${index}.text`) ||
                         createCitationMutation.isPending
@@ -511,4 +478,4 @@ const CitationForm = ({
   );
 };
 
-export default CitationForm;
+export default CitationSegmentation;

@@ -10,36 +10,9 @@ import { SenseSchema } from "@/app/schemas/Schema";
 import CitationForm from "./Citation";
 import { createSense, editSense } from "@/app/actions/PostActions";
 import LabelSelector from "./LabelSelector";
-
-interface Label {
-  id: string;
-  text: string;
-  parent_id: string | null;
-}
+import { Label, SenseProps } from "../_types/type";
 
 export type InputSense = z.infer<typeof SenseSchema>;
-
-interface SenseProps {
-  onClose: () => void;
-  domaindata: Label[];
-  posData: any;
-  registerData: any;
-  nameEntityData: any;
-  onSubmit: (data: InputSense) => void;
-  initialData?: InputSense & {
-    id?: string;
-    citation?: any[];
-    domain?: Label[];
-  };
-  wordId: string;
-  bookData: any;
-  Authordata: any;
-  Editordata: any;
-  Tertondata: any;
-  Translatordata: any;
-  PublisherData: any;
-  printmethoddata: any;
-}
 
 const Sense = ({
   onClose,

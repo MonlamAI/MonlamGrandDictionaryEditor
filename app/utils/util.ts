@@ -49,3 +49,31 @@ export const changetibnumtoreal = (data: string) => {
 
   return result;
 };
+
+export const findBookById = (id, bookData) => {
+  return bookData.find((book: any) => book.id === id);
+};
+
+export const findAuthorById = (id, authorData) => {
+  return authorData.find((author: any) => author.id === id);
+};
+
+export const findEditorById = (id, Editordata) => {
+  return Editordata.find((author: any) => author.id === id);
+};
+
+export const findTertonById = (id, Tertondata) => {
+  return Tertondata.find((author: any) => author.id === id);
+};
+
+export const findTranslatorById = (id, Translatordata) => {
+  return Translatordata.find((author: any) => author.id === id);
+};
+
+export const findPublisherById = (id, PublisherData) => {
+  return PublisherData.find((pub: any) => pub.id === id);
+};
+
+export const findprintmethodById = (id, printmethoddata) => {
+  return printmethoddata.find((data: any) => data.id === id);
+};
