@@ -227,6 +227,27 @@ export async function searchWords(query: string): Promise<WordsResponse> {
   }
 }
 
+export async function getuserstatus(email: string) {
+  try {
+    const response = await axios.get(
+      `https://api.monlamdictionary.com/api/user/${email}`,
+      {
+        headers: {
+          apikey: process.env.API_KEY,
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.status;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("API Error:", error.response?.data || error.message);
+      throw new Error(`Failed to fetch user: ${error.message}`);
+    }
+    throw error;
+  }
+}
 export async function getworddetails(id: string) {
   try {
     const response = await apiClient.get(`/word/${id}`);
