@@ -1,7 +1,8 @@
 "use server";
 
 import axios from "axios";
-const BASE_URL = "https://api.monlamdictionary.com/api/grand";
+const API_URL ="https://monlam-dictionary-api-wuyq.onrender.com"
+const BASE_URL = API_URL+"/api/grand";
 
 interface WordsResponse {
   words: Word[];
@@ -230,7 +231,7 @@ export async function searchWords(query: string): Promise<WordsResponse> {
 export async function getuserstatus(email: string) {
   try {
     const response = await axios.get(
-      `https://api.monlamdictionary.com/api/user/${email}`,
+      API_URL+`/api/user/${email}`,
       {
         headers: {
           apikey: process.env.API_KEY,
@@ -264,7 +265,7 @@ export async function getworddetails(id: string) {
 export async function getuserrole(email: string) {
   try {
     const response = await axios.get(
-      `https://api.monlamdictionary.com/api/user/${email}`,
+      API_URL+`/api/user/${email}`,
       {
         headers: {
           apikey: process.env.API_KEY,

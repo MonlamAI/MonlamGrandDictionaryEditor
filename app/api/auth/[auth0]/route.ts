@@ -2,6 +2,9 @@ import { getuserstatus } from "@/app/actions/GetActions";
 import { handleAuth, handleCallback } from "@auth0/nextjs-auth0";
 import axios from "axios";
 
+
+const API_URL ="https://monlam-dictionary-api-wuyq.onrender.com"
+
 const afterCallback = async (req, session, config) => {
   if (session?.user) {
     try {
@@ -15,7 +18,7 @@ const afterCallback = async (req, session, config) => {
         };
 
         await axios.post(
-          `https://api.monlamdictionary.com/api/user`,
+          API_URL+`/api/user`,
           userData,
           {
             headers: {

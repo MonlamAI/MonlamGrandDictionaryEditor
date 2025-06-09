@@ -13,6 +13,10 @@ import axios from "axios";
 import { cleanData, typeMap } from "../utils/util";
 import { InputWord } from "../(mainroutes)/word/_components/wordForm";
 
+
+const API_URL ="https://monlam-dictionary-api-wuyq.onrender.com"
+
+
 export async function createPerson(data: z.infer<typeof personSchema>) {
   try {
     const { type, ...dataToSend } = data;
@@ -23,7 +27,7 @@ export async function createPerson(data: z.infer<typeof personSchema>) {
     }
 
     const response = await axios.post(
-      `https://api.monlamdictionary.com/api/grand/book/${pathnav}/create`,
+      API_URL+`/api/grand/book/${pathnav}/create`,
       dataToSend,
       {
         headers: {
@@ -45,7 +49,7 @@ export async function createPerson(data: z.infer<typeof personSchema>) {
 export async function createPublisher(data: z.infer<typeof PublisherSchema>) {
   try {
     const response = await axios.post(
-      "https://api.monlamdictionary.com/api/grand/book/publisher/create",
+      API_URL+"/api/grand/book/publisher/create",
       data,
       {
         headers: {
@@ -68,7 +72,7 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
   const cleandata = cleanData(data);
   try {
     const response = await axios.post(
-      "https://api.monlamdictionary.com/api/grand/metadata/book/create",
+      API_URL+"/api/grand/metadata/book/create",
       cleandata,
       {
         headers: {
@@ -90,7 +94,7 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
 export async function createSense(data: z.infer<typeof SenseSchema>) {
   try {
     const response = await axios.post(
-      "https://api.monlamdictionary.com/api/grand/sense/create",
+      API_URL+"/api/grand/sense/create",
       data,
       {
         headers: {
@@ -112,7 +116,7 @@ export const editSense = async (
   data: z.infer<typeof SenseSchema> & { id: string },
 ) => {
   const response = await axios.put(
-    `https://api.monlamdictionary.com/api/grand/sense/edit/${data.id}`,
+    API_URL+`/api/grand/sense/edit/${data.id}`,
     data,
     {
       headers: {
@@ -127,7 +131,7 @@ export const editSense = async (
 export async function createWord(data: z.infer<typeof WordSchema>) {
   try {
     const response = await axios.post(
-      "https://api.monlamdictionary.com/api/grand/word/create",
+      API_URL+"/api/grand/word/create",
       data,
       {
         headers: {
@@ -149,7 +153,7 @@ export async function createWord(data: z.infer<typeof WordSchema>) {
 export async function createCitation(data: z.infer<typeof CitationSchema>) {
   try {
     const response = await axios.post(
-      "https://api.monlamdictionary.com/api/grand/metadata/citation/create",
+      API_URL+"/api/grand/metadata/citation/create",
       data,
       {
         headers: {
@@ -172,7 +176,7 @@ export async function createCitation(data: z.infer<typeof CitationSchema>) {
 export const updateword = async (id: number, data: InputWord) => {
   try {
     const response = await axios.put(
-      `https://api.monlamdictionary.com/api/grand/word/edit/${id}`,
+      API_URL+`/api/grand/word/edit/${id}`,
       {
         lemma: data.lemma,
         is_modern: data.is_modern,
