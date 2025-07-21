@@ -14,7 +14,7 @@ import { cleanData, typeMap } from "../utils/util";
 import { InputWord } from "../(mainroutes)/word/_components/wordForm";
 
 
-const API_URL ="https://monlam-dictionary-api-wuyq.onrender.com"
+const API_URL =process.env?.API_URL
 
 
 export async function createPerson(data: z.infer<typeof personSchema>) {
