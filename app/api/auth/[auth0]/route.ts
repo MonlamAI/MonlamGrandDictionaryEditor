@@ -3,7 +3,7 @@ import { handleAuth, handleCallback } from "@auth0/nextjs-auth0";
 import axios from "axios";
 
 
-const API_URL ="https://monlam-dictionary-api-wuyq.onrender.com"
+const API_URL =process.env?.API_URL
 
 const afterCallback = async (req, session, config) => {
   if (session?.user) {
