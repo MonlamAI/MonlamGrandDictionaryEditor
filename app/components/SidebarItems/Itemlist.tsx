@@ -34,15 +34,7 @@ const Itemlist: React.FC<ItemlistProps> = ({ searchQuery }) => {
         ? lastPage.current_page + 1
         : undefined,
     initialPageParam: 1,
-  });
-
-  useEffect(() => {
-    const refreshInterval = setInterval(() => {
-      refetch();
-    }, 5000);
-
-    return () => clearInterval(refreshInterval);
-  }, [refetch]);
+  },);
 
   useEffect(() => {
     if (inView && hasNextPage) {
