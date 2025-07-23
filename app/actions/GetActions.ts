@@ -231,7 +231,7 @@ export async function searchWords(query: string): Promise<WordsResponse> {
 export async function getuserstatus(email: string) {
   try {
     const response = await axios.get(
-      API_URL+`/api/user/${email}`,
+      API_URL+`/api/user/${email}/`,
       {
         headers: {
           apikey: process.env.API_KEY,
@@ -243,6 +243,9 @@ export async function getuserstatus(email: string) {
     return response.status;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        return 404;
+      }
       console.error("API Error:", error.response?.data || error.message);
       throw new Error(`Failed to fetch user: ${error.message}`);
     }
