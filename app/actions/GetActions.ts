@@ -231,7 +231,7 @@ export async function searchWords(query: string): Promise<WordsResponse> {
 export async function getuserstatus(email: string) {
   try {
     const response = await axios.get(
-      API_URL+`/api/user/${email}/`,
+      API_URL+`/api/user/${email}`,
       {
         headers: {
           apikey: process.env.API_KEY,

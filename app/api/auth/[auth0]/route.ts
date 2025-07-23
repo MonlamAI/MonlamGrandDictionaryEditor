@@ -18,7 +18,7 @@ const afterCallback = async (req, session, config) => {
         };
 
         await axios.post(
-          API_URL+`/api/user/`,
+          API_URL+`/api/user`,
           userData,
           {
             headers: {
